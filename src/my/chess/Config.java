@@ -7,4 +7,5 @@ public class Config {
     static int checkmateDeep = 7;  //算杀深度
 
     public static final int N = 15; 	// 棋盘规模，与ChessBoard里的一致
+    public static final boolean DEBUG = true;
 }

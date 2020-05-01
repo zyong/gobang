@@ -80,11 +80,46 @@ public class Board extends JPanel {
 
 		// 鼠标点击事件
 		enableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+	}
+	
+	public GameModel getModel() {
+		return model;
+	}
 
+	public void put(Position p) {
+		if (Config.DEBUG) {
+			System.out.printf("put point px:%d py:%d role:%d", p.px, p.py, p.role);
+		}
+
+		model.matrix[p.px][p.py].role = p.role;
+		repaint();
+	}
+
+	public void remove(Position p) {
+		if (Config.DEBUG) {
+			System.out.printf("remove point px:%d py:%d role:%d", p.px, p.py, p.role);
+		}
+
+		model.matrix[p.px][p.py].role = p.role;
+		repaint();
+	}
+
+	/**
+	 * 棋局的开局设置
+	 * 1、设置初始棋子的位置（可以有多中变化）
+	 * 2、设置变量的初始值
+	 */
+	public void init() {
+		
+		initScore();
+	}
+
+
+	public void initScore() {
 		for (int i=0; i<model.matrix.length;i++) {
 			for (int j=0; j<model.matrix.length; j++) {
 				if (model.matrix[i][j].role == Position.EMPTY) {
-					if (this.hasNeighbor(i,j,1,1)) {
+					if (hasNeighbor(i,j,1,1)) {
 						int cs = EvaluatePoint.scorePoint(this, i, j, Position.COMPUTER, 0);
 						int hs = EvaluatePoint.scorePoint(this, i, j, Position.HUMAN, 0);
 						comScore[i][j] = cs;
@@ -122,11 +157,6 @@ public class Board extends JPanel {
 		}
 
 		return false;
-	}
-
-	
-	protected GameModel getModel() {
-		return model;
 	}
 
 
@@ -437,7 +467,7 @@ public class Board extends JPanel {
 
 		// 根据棋局设置添加robots
 		if (rule == COMPUTER) {
-			this.robotA = new Robots(model);
+			this.robotA = new Robots(this);
 		}
 	}
 

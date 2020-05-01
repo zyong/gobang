@@ -3,12 +3,17 @@ package my.chess;
 import java.util.ArrayList;
 import java.util.Random;
 
-/*  
-* 自动计算最佳的棋子位子，使用minmax和alpha-beta算法
-*/ 
+/**
+ * 实现五子棋的机器人逻辑
+ * 1、棋子得分计算
+ * 2、通知棋盘更新
+ * 3、行列得分计算
+ * 
+ */
 public class Robots {
     int role = Position.COMPUTER;
     private GameModel model;
+    private Board board;
     private int deep = 4;
     private static final int MAX = Position.FIVE * 100;
     private static final int MIN = -MAX;
@@ -18,32 +23,61 @@ public class Robots {
     int total;
     int cut;
 
-    public Robots(GameModel model) {
-        this.model = model;
+    public Robots(Board b) {
+        this.board = b;
+        this.model = b.getModel();
+        // 初始一个随机值
+        start();
     }
 
-    public void genPosition() {
-        if (start == null) {
-            // 第一次落子,从棋盘位子中随机取一个
-            // 或者没有可以放置的位置时,随机取一个值
-            // 初始化一个位置
-            Random rand = new Random();
-            while (true) {
-                int x = 1 + rand.nextInt(GameModel.N);
-                int y = 1 + rand.nextInt(GameModel.N);
-                start =
-                model.matrix[x][y];
-                if (start.role == Position.EMPTY) {
-                    start.role = Position.COMPUTER;
-                    break;
-                } else if (start.role != Position.EMPTY) {
-                    continue;
-                }
+    public void start() {
+        int n = GameModel.N;
+        // 第一次落子,从棋盘位子中随机取一个
+        // 或者没有可以放置的位置时,随机取一个值
+        // 初始化一个位置
+        Random rand = new Random();
+        while (true) {
+            int randIntX = rand.nextInt(6);
+            int x;
+            int y;
+            if (randIntX % 2 == 0) {
+                x = n/2 + randIntX;
+            } else {
+                x = n/2 - randIntX;
             }
-        } else {
-            Position p = minmax(deep);
-            p.role = role;
+
+            int randIntY = rand.nextInt(6);
+            if (randIntY % 2 == 0) {
+                y = n/2 + randIntY;
+            } else {
+                y = n/2 - randIntY;
+            }
+          
+            start =
+            model.matrix[x][y];
+            if (start.role == Position.EMPTY) {
+                start.role = Position.COMPUTER;
+                break;
+            } else if (start.role != Position.EMPTY) {
+                continue;
+            }
         }
+    }
+
+    /**
+     * 电脑下棋
+     * @return {@link Position}
+     */
+    public Position put() {
+        Position p = genPosition();
+        board.put(p);
+        return p;
+    }
+
+    public Position genPosition() {
+        Position p = minmax(deep);
+        p.role = role;
+        return p;
     }
 
     protected Position minmax(int deep) {
