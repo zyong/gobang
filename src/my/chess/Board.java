@@ -433,9 +433,11 @@ public class Board extends JPanel {
 			}
 
 			if (humandrobotButton.contains(e.getPoint())) {
-				setRule(Board.COMPUTER);
+				setRule(Position.COMPUTER);
 				model.reset();
-				notifyRobots();
+				robotA.start();
+				repaint();
+				whoIsNow = Position.HUMAN;
 				return;
 			}
 

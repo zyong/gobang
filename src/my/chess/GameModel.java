@@ -141,18 +141,21 @@ public class GameModel
 				start++;
 				role = p.role;
 
-				// 比如 0,1,2,3,4 全白
-				for(int k=i+1; k<=5;k++) {
-					if (line[k].role == role) {
-						start++;
-						if (start == 5) {
-							return true;
+				if ((i + 4) <= line.length) {
+					// 比如 0,1,2,3,4 全白
+					for(int k=i+1; k<=5;k++) {
+						if (line[k].role == role) {
+							start++;
+							if (start == 5) {
+								return true;
+							}
+							continue;
+						} else {
+							break;
 						}
-						continue;
-					} else {
-						break;
 					}
 				}
+				
 			}
 		}
 		
@@ -189,7 +192,8 @@ public class GameModel
 
         for (int i=0; i<matrix.length; i++) {
             for (int j=0; j<matrix[0].length; j++) {
-				if (matrix[i][j].role == Position.EMPTY && hasNeihbor(matrix[i][j], 2, 2)) {
+				if (matrix[i][j].role == Position.EMPTY && 
+					hasNeihbor(matrix[i][j], 2, 2)) {
 					int scoreHum = scorePoint(matrix[i][j], Position.HUMAN);
 					int scoreCom = scorePoint(matrix[i][j], Position.COMPUTER);
 					// 分别查看电脑和玩家能否到5，4，3等分值
@@ -242,7 +246,7 @@ public class GameModel
 		ans = threes;
 
 		if (ans.size() > Config.countLimit) {
-			return ans.subList(0, Config.countLimit);
+			return new ArrayList<>(ans.subList(0, Config.countLimit));
 		}
 			 
 		return ans;
@@ -478,23 +482,28 @@ public class GameModel
 	}
 
 	private boolean hasNeihbor(Position point, int distance, int count) {
-		ArrayList<Position> neibors = new ArrayList<>();
-		
-		// 找空位左右1格的位置
-		for (int i = point.px-distance; i<=point.px+distance; i++) {
-			if (i<=0 || i >= N) continue;
-			for (int j=point.py - distance; j <= point.py + distance; j++) {
-				if (j <= 0 || j >= N) continue;
-				if (i == point.px && j == point.py) continue;
-				// 找到一个节点
-				if (matrix[i][j].role == Position.EMPTY) {
-					neibors.add(matrix[i][j]);
+		int len = matrix.length;
+		int startX = point.px - distance;
+		int endX = point.px + distance;
+		int startY = point.py - distance;
+		int endY = point.py + distance;
+
+		for (int i=startX; i<= endX; i++) {
+			if (i<0 || i>= len)  
+				continue;
+			for (int j = startY; j <= endY; j++) {
+				if (j < 0 || j>=len) 
+					continue;
+				if (i == point.px && j == point.py) 
+					continue;
+				if (matrix[i][j].role != Position.EMPTY) {
 					count--;
 					if (count <= 0) 
-						return false;
+						return true;
 				}
 			}
+		
 		}
-		return true;
+		return false;
 	}
 }

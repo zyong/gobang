@@ -101,24 +101,37 @@ public class Robots {
         for (int i=0; i<points.size(); i++) {
             Position p = points.get(i);
             matrix[p.px][p.py].role = Position.COMPUTER;
+            double v = - max(deep-1, MIN, (best > MIN ? best : MIN), Position.HUMAN);
 
-            double v = - max(deep-1, best > MIN ? best : MIN, MAX, Position.HUMAN);
-            if (v == best) {
+            // 对边缘棋子要给分数打折，避免电脑总往边上走
+            if (p.px < 3 || p.px > 11 || p.py < 3 || p.py > 11) {
+                v = 0.5 * v;
+            }
+            // 在一个阈值范围内
+            if ((v * threshold > best) && (v < best * threshold)) {
                 bestPositions.add(p);
             }
 
-            if (v > best) {
+            if (v > best * threshold) {
                 best = v;
                 bestPositions.clear();
                 bestPositions.add(p);
             }
-            p.role = Position.EMPTY;
+            matrix[p.px][p.py].role = Position.EMPTY;
         }
 
-        System.out.println("当前局面分数：" + best);
+
+        StringBuilder sb = new StringBuilder();
+        for (Position p: bestPositions) {
+            sb.append("x:" + p.px + " y:" + p.py);
+        }
+
+        System.out.println("当前局面分数：" + best +", 待选节点" + sb.toString());
         System.out.println("搜索节点数" + total + " 剪枝节点数" + abCut);
         Position result = bestPositions.get((int) Math.floor(bestPositions.size() * Math.random()));
         result.score = best;
+        steps++;
+        total += count;
         System.out.println("当前返回节点：x:" + result.px + " y:" + result.px);
         return result;
     }
