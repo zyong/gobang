@@ -98,6 +98,9 @@ public class GameModel
 	// 根据位置，取得点位的值
 	public Position at(int px, int py)
 	{
+		if ((px < 0 || px >= N) || (py < 0 || py >= N)) {
+			return null;
+		}
 		return matrix[px][py];
 	}
 	
@@ -114,41 +117,46 @@ public class GameModel
 	}
 	
 	// 检查所有直线上，是否存在五子连珠。
-	public Position[] checkWin()
+	public Boolean checkWin()
 	{
 		for(Position[] line : lines)
 		{
-			Position[] result = checkWin(line);
-			if(result != null)
-				return result;
+			Boolean result = checkWin(line);
+			if (Boolean.TRUE.equals(result)) {
+				return true;
+			}
 		}
-		return new Position[0];
+		return false;
 	}
 	
 	// 检查一条直线上，是否存在五子连珠。如果 存在，则返回这五个连续的点位
-	public Position[] checkWin(Position[] line)
+	public Boolean checkWin(Position[] line)
 	{
-		int color = Position.EMPTY;
+		int role = Position.EMPTY;
 		int start = 0;
 		for(int i=0; i<line.length;i++)
 		{
 			Position p = line[i];
-			if(p.role != color)
-			{
-				start = i;
-				color = p.role;
-			}
-			// 比如 0,1,2,3,4 全白
-			if(color != Position.EMPTY && i-start>=4)
-			{
-				Position[] result = new Position[5];
-				for(int k=0; k<5;k++)
-					result[k] = line[start + k];
-				return result;
+			if(p.role != role) {
+				start++;
+				role = p.role;
+
+				// 比如 0,1,2,3,4 全白
+				for(int k=i+1; k<=5;k++) {
+					if (line[k].role == role) {
+						start++;
+						if (start == 5) {
+							return true;
+						}
+						continue;
+					} else {
+						break;
+					}
+				}
 			}
 		}
 		
-		return new Position[0];
+		return false;
 	}
 	
 	// 重置为初始状态

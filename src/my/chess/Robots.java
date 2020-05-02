@@ -3,6 +3,7 @@ package my.chess;
 import java.util.ArrayList;
 import java.util.Random;
 
+
 /**
  * 实现五子棋的机器人逻辑
  * 1、棋子得分计算
@@ -17,14 +18,16 @@ public class Robots {
     private int deep = 4;
     private static final int MAX = Position.FIVE * 100;
     private static final int MIN = -MAX;
-    private Position start = null;
+    
 
     // 总节点数， 剪枝的节点数
     int total = 0;  //总节点数
     int steps = 0;  //总步数
     int count;      //每次思考的节点数
-    int PVcut; 
-    int ABcut;      //AB剪枝次数
+    int pvCut; 
+    int abCut;      //AB剪枝次数
+
+    double threshold = 1.1;
 
     public Robots(Board b) {
         this.board = b;
@@ -56,7 +59,7 @@ public class Robots {
                 y = n/2 - randIntY;
             }
           
-            start =
+            Position start =
             model.matrix[x][y];
             if (start.role == Position.EMPTY) {
                 start.role = Position.COMPUTER;
@@ -78,20 +81,20 @@ public class Robots {
     }
 
     public Position genPosition() {
-        Position p = minmax(deep);
+        Position p = maxmin(deep);
         p.role = role;
         return p;
     }
 
-    protected Position minmax(int deep) {
-        int best = MIN;
+    protected Position maxmin(int deep) {
+        double best = MIN;
         ArrayList<Position> bestPositions = new ArrayList<>();
 
         ArrayList<Position> points = (ArrayList<Position>) model.genPosition(deep);
 
         count = 0;
-        ABcut = 0;
-        PVcut = 0;
+        abCut = 0;
+        pvCut = 0;
 
         Position[][] matrix = model.matrix;
 
@@ -99,7 +102,7 @@ public class Robots {
             Position p = points.get(i);
             matrix[p.px][p.py].role = Position.COMPUTER;
 
-            int v = - max(deep-1, best > MIN ? best : MIN, MAX);
+            double v = - max(deep-1, best > MIN ? best : MIN, MAX, Position.HUMAN);
             if (v == best) {
                 bestPositions.add(p);
             }
@@ -113,74 +116,60 @@ public class Robots {
         }
 
         System.out.println("当前局面分数：" + best);
-        System.out.println("搜索节点数" + total + " 剪枝节点数" + cut);
+        System.out.println("搜索节点数" + total + " 剪枝节点数" + abCut);
         Position result = bestPositions.get((int) Math.floor(bestPositions.size() * Math.random()));
+        result.score = best;
         System.out.println("当前返回节点：x:" + result.px + " y:" + result.px);
         return result;
     }
 
-
-    /*
-     * 计算最小
-     */
-    private int min(int deep, int alpha, int beta) {
-        int v = evaluate();
+    private double max(int deep, double alpha, double beta, int role) {
+        double v = evaluate();
         total++;
 
-        if (deep <= 0) {
+        Boolean result = model.checkWin(); 
+        if (deep <= 0 || Boolean.TRUE.equals(result)) {
             return v;
         }
 
-        int best = MAX;
+        double best = MIN;
         ArrayList<Position> points = (ArrayList<Position>) model.genPosition(deep);
 
-        for (int i=0; i<points.size(); i++) {
+        for (int i=0; i < points.size(); i++) {
             Position p = points.get(i);
-            model.matrix[p.px][p.py].role = Position.HUMAN;
-
-            v = max(deep - 1, alpha, best < beta ? best : beta);
+            model.matrix[p.px][p.py].role = role;
+            v = - max(deep - 1, best > alpha ? best : alpha, beta, p.reverseRole(role)) * Config.deepDecrease;
             model.matrix[p.px][p.py].role = Position.EMPTY;
 
-            if (v < best) {
+            if (v > alpha * threshold) {
                 best = v;
             }
 
-            if (v < alpha) {
-                cut++;
-                break;
+            if (v * threshold > beta) {
+                abCut++;
+                return v;
             }
         }
 
         return best;
     }
 
-    private int max(int deep, int alpha, int beta) {
-        int v = evaluate();
-        total++;
-
-        if (deep <= 0) {
-            return v;
+    /**
+     * 迭代加深
+     * @param deep
+     * @return
+     */
+    public Position deeping(int deep) {
+        if (deep < 2) {
+            deep = Config.searchDeep;
         }
-
-        int best = MIN;
-        ArrayList<Position> points = (ArrayList<Position>) model.genPosition(deep);
-
-        for (int i=0; i < points.size(); i++) {
-            Position p = points.get(i);
-            model.matrix[p.px][p.py].role = Position.COMPUTER;
-            v = min(deep - 1, best > alpha ? best : alpha, beta);
-            model.matrix[p.px][p.py].role = Position.EMPTY;
-
-            if (v > alpha) {
-                best = v;
-            }
-
-            if (v > beta) {
-                cut++;
-                break;
-            }
+        Position result = new Position();
+        for (int i=2; i <= deep; i+=2) {
+            result = maxmin(i);
+            if (result.score * threshold > Position.FOUR) 
+                return result;
         }
-        return best;
+        return result;
     }
 
     private int evaluate() {
@@ -200,10 +189,10 @@ public class Robots {
     }
 
     private int evaluateRow(Position[] line, int role) {
-        int count = 0; //连子数
+        count = 0; //连子数
         int block = 0; //封闭数
         int empty = 0; //空位数
-        int value = 0; //分数
+        int value = 0;
 
         for (int i=1; i<line.length-1; i++) {
             if (line[i].role == role) {
@@ -241,7 +230,7 @@ public class Robots {
             }
 
         }
-        return role;
+        return value;
     }
 
     private int score(int count, int block, int empty) {

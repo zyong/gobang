@@ -30,6 +30,7 @@ public class Position
 	public int px = 0; // 水平位置坐标 :0,1,2,...,10
 	public int py = 0; // 竖直位置坐标 :0,1,2,...,10
 	public boolean mark = false;// 游戏结束时的标记,五子连珠的特殊显示标识
+	public double score = 0.0;
 
 	
 	public Position()
@@ -41,5 +42,13 @@ public class Position
 		this.role = role;
 		this.px = px;
 		this.py = py;
+	}
+
+	public int reverseRole(int role) {
+		if (role == HUMAN) {
+			return COMPUTER;
+		} else {
+			return HUMAN;
+		}
 	}
 }

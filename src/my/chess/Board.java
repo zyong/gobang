@@ -45,7 +45,7 @@ public class Board extends JPanel {
 	private int[] baseV = new int[GameModel.N + 1]; // 竖起方向, 11条纬线的位置
 
 	// 游戏状态数据
-	private int whoIsNow = Position.BLACK; // 黑方先行
+	private int whoIsNow = Position.COMPUTER; // 黑方先行
 	private GameModel model = new GameModel();
 
 	// 焦点提示
@@ -88,7 +88,7 @@ public class Board extends JPanel {
 
 	public void put(Position p) {
 		if (Config.DEBUG) {
-			System.out.printf("put point px:%d py:%d role:%d", p.px, p.py, p.role);
+			System.out.printf("put point px:%d py:%d role:%d%n", p.px, p.py, p.role);
 		}
 
 		model.matrix[p.px][p.py].role = p.role;
@@ -97,7 +97,7 @@ public class Board extends JPanel {
 
 	public void remove(Position p) {
 		if (Config.DEBUG) {
-			System.out.printf("remove point px:%d py:%d role:%d", p.px, p.py, p.role);
+			System.out.printf("remove point px:%d py:%d role:%d%n", p.px, p.py, p.role);
 		}
 
 		model.matrix[p.px][p.py].role = p.role;
@@ -110,7 +110,6 @@ public class Board extends JPanel {
 	 * 2、设置变量的初始值
 	 */
 	public void init() {
-		
 		initScore();
 	}
 
@@ -214,7 +213,7 @@ public class Board extends JPanel {
 			int r = (int) (cell * 0.43);
 			//
 			Color fillColor = new Color(0x80FCFCFC, true);// 半透明颜色 ARGB
-			if (whoIsNow == Position.BLACK)
+			if (whoIsNow == Position.COMPUTER)
 				fillColor = new Color(0x80202020, true); // 半透明颜色 ARGB
 
 			g2d.setPaint(fillColor);
@@ -231,7 +230,13 @@ public class Board extends JPanel {
 		if (true) {
 			int cx = square.x + cell * N / 2 + 30; // 中间偏右的位置
 			int cy = square.y - cell;
-			drawChess(g2d, cx, cy, whoIsNow == Position.BLACK, false);
+			drawChess(
+				g2d, 
+				cx, 
+				cy, 
+				whoIsNow == Position.COMPUTER, 
+				false
+			);
 			g2d.setPaint(new Color(0x202020));
 			g2d.setFont(g2d.getFont().deriveFont(18.0f));
 			g2d.drawString("当前先手:", cx - 100, cy + 7);
@@ -402,8 +407,12 @@ public class Board extends JPanel {
 	 */
 	private Position testPosition(int x, int y) {
 		// 归纳到最近的整数 (点击在交叉点附近，都会被归纳到交叉点)
-		int px = Math.round((float) (x - square.x) / cell);
-		int py = Math.round((float) (y - square.y) / cell);
+		int px = Math.round((float) (x - square.x) / cell) - 1;
+		int py = Math.round((float) (y - square.y) / cell) - 1;
+		if (Config.DEBUG) {
+			System.out.printf("x: %d y: %d, sqx:%d, sqy:%d cell:%d", px, py, square.x, square.y, cell);
+		}
+
 
 		return model.at(px, py);
 	}
@@ -438,7 +447,6 @@ public class Board extends JPanel {
 			// 人下了一子
 			Position p = testPosition(e.getX(), e.getY());
 			if (p != null && p.role == Position.EMPTY) {
-				System.out.printf("Set: %dx%d To : %d%n", p.px, p.py, whoIsNow);
 				p.role = whoIsNow;
 				p.role = Position.HUMAN;
 				whoIsNow = 0 - whoIsNow; // 交换先手
@@ -490,7 +498,7 @@ public class Board extends JPanel {
 	protected void notifyRobots() {
 		Runnable runx = new Runnable() {
 			public void run() {
-				robotA.genPosition();
+				robotA.put();
 				// 鼠标点击事件
 				enableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 				whoIsNow = 0 - robotA.role;
@@ -505,21 +513,16 @@ public class Board extends JPanel {
 	 */
 	protected void checkWin() {
 		// 检查输赢
-		Position[] result = model.checkWin();
-		if (result != null) {
+		Boolean result = model.checkWin();
+		if (Boolean.TRUE.equals(result)) {
 			System.out.println("游戏结束!");
-			model.printLine("结果:", result);
 
 			// 提示一个对话框
-			int winner = result[0].role;
-			if (winner == Position.COMPUTER)
+			if (whoIsNow == Position.COMPUTER)
 				new InfoDialog(this, "You Lose").exec();
 			else
 				new InfoDialog(this, "You Win").exec();
 
-			// 将五子连珠加上特殊标识
-			for (Position ps : result)
-				ps.mark = true;
 			isActive = false;
 		}
 		repaint();
