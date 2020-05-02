@@ -20,8 +20,11 @@ public class Robots {
     private Position start = null;
 
     // 总节点数， 剪枝的节点数
-    int total;
-    int cut;
+    int total = 0;  //总节点数
+    int steps = 0;  //总步数
+    int count;      //每次思考的节点数
+    int PVcut; 
+    int ABcut;      //AB剪枝次数
 
     public Robots(Board b) {
         this.board = b;
@@ -86,10 +89,17 @@ public class Robots {
 
         ArrayList<Position> points = (ArrayList<Position>) model.genPosition(deep);
 
+        count = 0;
+        ABcut = 0;
+        PVcut = 0;
+
+        Position[][] matrix = model.matrix;
+
         for (int i=0; i<points.size(); i++) {
             Position p = points.get(i);
-            p.role = Position.COMPUTER;
-            int v = min(deep-1, best > MIN ? best : MIN, MAX);
+            matrix[p.px][p.py].role = Position.COMPUTER;
+
+            int v = - max(deep-1, best > MIN ? best : MIN, MAX);
             if (v == best) {
                 bestPositions.add(p);
             }
@@ -174,9 +184,9 @@ public class Robots {
     }
 
     private int evaluate() {
-        ArrayList<Position[]> rows = (ArrayList<Position[]>) model.lines;
-        int comScore = evaluateRows(rows, Position.COMPUTER);
-        int humScore = evaluateRows(rows, Position.HUMAN);
+
+        int comScore = evaluateRows((ArrayList<Position[]>) model.lines, Position.COMPUTER);
+        int humScore = evaluateRows((ArrayList<Position[]>) model.lines, Position.HUMAN);
 
         return comScore - humScore;
     }
@@ -190,59 +200,196 @@ public class Robots {
     }
 
     private int evaluateRow(Position[] line, int role) {
-        int count = 0;
-        int block = 0;
+        int count = 0; //连子数
+        int block = 0; //封闭数
+        int empty = 0; //空位数
+        int value = 0; //分数
 
         for (int i=1; i<line.length-1; i++) {
             if (line[i].role == role) {
                 count = 1;
                 block = 0;
+                empty = 0;
+
                 // 棋子在边界上
                 if (i==0 || line[i-1].role != Position.EMPTY) {
                     block = 1;
                 }
                 // 向后查找同色棋子
-                for (int j=i+1; j<line.length-1; j++) {
+                for (int j=i+1; j<line.length; j++) {
                     // 计算有多少相连的同色棋子
                     if (line[j].role == role) {
                         count++;
-                    } else {
+                    } else if (
+                        empty == 0 &&
+                        j < line.length-1 &&
+                        line[j].role == Position.EMPTY &&
+                        line[j+1].role == role 
+                     ) {
+                        empty = count;
+                    }
+                    else {
                         break;
                     }
                 }
-                if (i == line.length - 1 && line[i].role == role) {
+
+                //判断有边界
+                if (i == line.length - 1 && line[i].role != Position.EMPTY) {
                     block++;
                 }
-                role += score(count, block);
+                value += score(count, block, empty);
             }
 
         }
         return role;
     }
 
-    private int score(int count, int block) {
-        if (count >= 5) {
+    private int score(int count, int block, int empty) {
+
+        if (empty == 0) {
+            if (count >= 5) {
+                return Position.FIVE;
+            }
+    
+            if (block == 0) {
+                switch (count) {
+                    case 1: return Position.ONE;
+                    case 2: return Position.TWO;
+                    case 3: return Position.THREE;
+                    case 4: return Position.FOUR;
+                    default: break;
+                }
+            }
+            if (block == 1) {
+                switch(count) {
+                    case 1: return Position.BLOCKED_ONE;
+                    case 2: return Position.BLOCKED_TWO;
+                    case 3: return Position.BLOCKED_THREE;
+                    case 4: return Position.BLOCKED_FOUR;
+                    default: break;
+                }
+            } 
+        } else if (empty == 1 || empty == count-1) {
+            if (count >= 6) {
+                return Position.FIVE;
+            }
+            if (block == 0) {
+                switch(count) {
+                    case 2: return Position.TWO;
+                    case 3: 
+                    case 4: return Position.THREE;
+                    case 5: return Position.FOUR;
+                    default: break;
+                }
+            }
+            // 有一边被挡住的情况
+            if(block == 1) {
+                switch(count) {
+                    case 2: return Position.BLOCKED_TWO;
+                    case 3: return Position.BLOCKED_THREE;
+                    case 4: return Position.THREE;
+                    case 5: return Position.BLOCKED_FOUR;
+                    default: break;
+                }
+            }
+        } else if (empty == 2 || empty == count -2) {
+            if (count >= 7) {
+                return Position.FIVE;
+            }
+            if (block == 0) {
+                switch(count) {
+                    // 3的时候刚好前面有两个，后面有一个棋子
+                    // 4的时候前面有两个，后面有两个棋子
+                    // 5的时候前面有两个，后面有3个棋子
+                    case 3:
+                    case 4:
+                    case 5: return Position.THREE;
+                    case 6: return Position.FOUR;
+                    default: break;
+                }
+            }
+            if (block == 1) {
+                switch(count) {
+                    case 3: return Position.BLOCKED_THREE;
+                    case 4: return Position.BLOCKED_FOUR;
+                    case 5: return Position.BLOCKED_FOUR;
+                    case 6: return Position.FOUR;
+                    default: break;
+                }
+            }
+
+            if (block == 2) {
+                switch(count) {
+                    case 4:
+                    case 5:
+                    case 6: return Position.BLOCKED_FOUR;
+                    default: break;
+                  }
+            }
+        } else if (empty == 3 || empty == count - 3) {
+            if (count >= 8) {
+                return Position.FIVE;
+            }
+
+            if (block == 0) {
+                switch(count) {
+                    case 4:
+                    case 5: return Position.THREE;
+                    case 6: return Position.THREE*2;
+                    case 7: return Position.FOUR;
+                    default: break;
+                }
+            }
+
+            if (block == 1) {
+                switch(count) {
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7: return Position.BLOCKED_FOUR;
+                    default:break;
+                }
+            }
+        } else if (empty == 4 || empty == count - 4) {
+            if (count >= 9) {
+                return Position.FIVE;
+            }
+
+            if (block == 0) {
+                switch(count) {
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8: return Position.BLOCKED_FOUR;
+                    default: break;
+                }
+            }
+
+            if (block == 1) {
+                switch(count) {
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7: return Position.BLOCKED_FOUR;
+                    case 8: return Position.FOUR;
+                    default: break;
+                }
+            }
+
+            if (block == 2) {
+                switch(count) {
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8: return Position.BLOCKED_FOUR;
+                    default: break;
+                }
+            }
+        } else if (empty == 5 || empty == count - 5) {
             return Position.FIVE;
         }
 
-        if (block == 0) {
-            switch (count) {
-                case 1: return Position.ONE;
-                case 2: return Position.TWO;
-                case 3: return Position.THREE;
-                case 4: return Position.FOUR;
-                default: break;
-            }
-        }
-        if (block == 1) {
-            switch(count) {
-                case 1: return Position.BLOCKED_ONE;
-                case 2: return Position.BLOCKED_TWO;
-                case 3: return Position.BLOCKED_THREE;
-                case 4: return Position.BLOCKED_FOUR;
-                default: break;
-            }
-        } 
+        
 
         return 0;
     }
