@@ -115,16 +115,16 @@ public class Board extends JPanel {
 			for (int j=0; j<model.matrix.length; j++) {
 				if (model.matrix[i][j].role == Position.EMPTY) {
 					if (hasNeighbor(i,j,1,1)) {
-						int cs = EvaluatePoint.scorePoint(this, i, j, Position.COMPUTER);
-						int hs = EvaluatePoint.scorePoint(this, i, j, Position.HUMAN);
+						int cs = EvaluatePoint.scorePoint(model, i, j, Position.COMPUTER);
+						int hs = EvaluatePoint.scorePoint(model, i, j, Position.HUMAN);
 						comScore[i][j] = cs;
 						humScore[i][j] = hs;
 					}
 				} else if (model.matrix[i][j].role == Position.COMPUTER) {
-					comScore[i][j] = EvaluatePoint.scorePoint(this, i, j, Position.COMPUTER);
+					comScore[i][j] = EvaluatePoint.scorePoint(model, i, j, Position.COMPUTER);
 					humScore[i][j] = 0;
 				} else if (model.matrix[i][j].role == Position.HUMAN) {
-					humScore[i][j] = EvaluatePoint.scorePoint(this, i, j, Position.HUMAN);
+					humScore[i][j] = EvaluatePoint.scorePoint(model, i, j, Position.HUMAN);
 			        comScore[i][j] = 0;
 				}
 			}

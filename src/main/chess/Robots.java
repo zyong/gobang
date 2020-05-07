@@ -105,7 +105,8 @@ public class Robots {
             Position p = points.get(i);
             matrix[p.px][p.py].role = Position.COMPUTER;
             double v = - max(deep-1, MIN, (best > MIN ? best : MIN), Position.HUMAN);
-            p.score = v;
+            matrix[p.px][p.py].role = Position.EMPTY;
+
             // 对边缘棋子要给分数打折，避免电脑总往边上走
             if (p.px < 3 || p.px > 11 || p.py < 3 || p.py > 11) {
                 v = 0.5 * v;
@@ -120,7 +121,6 @@ public class Robots {
                 bestPositions.clear();
                 bestPositions.add(p);
             }
-            matrix[p.px][p.py].role = Position.EMPTY;
         }
         // 解决没有最佳棋子的问题
         if (bestPositions.isEmpty()) {
@@ -168,7 +168,7 @@ public class Robots {
             v = - max(deep - 1, best > alpha ? best : alpha, beta, Position.reverseRole(role)) * Config.deepDecrease;
             model.matrix[p.px][p.py].role = Position.EMPTY;
 
-            if (v > alpha * threshold) {
+            if (v > best * threshold) {
                 best = v;
             }
 

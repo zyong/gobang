@@ -177,7 +177,7 @@ public class GameModel
 
 	public void update(int x, int y, int role)
 	{
-		lines.get(x)[y].role = role;
+		matrix[x][y].role = role;
 	}
 
 	public List<Position> genPosition(int deep) {
@@ -192,11 +192,15 @@ public class GameModel
         for (int i=0; i<matrix.length; i++) {
             for (int j=0; j<matrix[0].length; j++) {
 				if (matrix[i][j].role == Position.EMPTY && 
-					hasNeihbor(matrix[i][j], 2, 2)) {
+					hasNeihbor(matrix[i][j], 1, 1)) {
 						// 启发式搜索,先计算得分，然后按照得分排序
-					int scoreHum = scorePoint(matrix[i][j], Position.HUMAN);
-					int scoreCom = scorePoint(matrix[i][j], Position.COMPUTER);
+					int scoreHum = EvaluatePoint.scorePoint(this, i, j, Position.HUMAN);
+					int scoreCom = EvaluatePoint.scorePoint(this, i, j, Position.COMPUTER);
 					// 分别查看电脑和玩家能否到5，4，3等分值
+					/**
+					 * 首先取自己得分高的位置，如果对方得分比自己高，证明对方棋局有优势要封堵，
+					 * 封堵的办法是在对方得分高的位置进行设置棋子，这样对方就不能得势了； 
+					 */
 					if (scoreCom >= Position.FIVE) {
 						ans.add(matrix[i][j]);
 						return ans;
@@ -208,6 +212,7 @@ public class GameModel
 						fours.add(0, matrix[i][j]);
 					} else if (scoreHum >= Position.FOUR) {
 						fours.add(matrix[i][j]);
+						// 双三的原因是两边没有阻碍
 					} else if (scoreCom >= 2*Position.THREE) {
 						twothrees.add(0, matrix[i][j]);
 					} else if (scoreHum >= 2*Position.THREE) {
@@ -321,7 +326,7 @@ public class GameModel
 				break;
 			}
 		}
-		// 得出横向得分
+		// 得出纵向得分
 		result += score(count, block, empty);
 
 		return result;

@@ -60,7 +60,7 @@ public class CheckMate {
                 if (model.matrix[i][j].role == Position.EMPTY) {
                     Position p = model.matrix[i][j];
                     if (model.hasNeihbor(p, 2, 1)) {
-                        int s = EvaluatePoint.scorePoint(b, p.px, p.py, role);
+                        int s = EvaluatePoint.scorePoint(b.getModel(), p.px, p.py, role);
                         p.score = (double) s;
                         if (s >= Position.FIVE) {
                             result.add(p);
@@ -93,8 +93,8 @@ public class CheckMate {
                 if (model.matrix[i][j].role == Position.EMPTY) {
                     Position p = model.matrix[i][j];
                     if (model.hasNeihbor(p, 2, 1)) {
-                        int s1 = EvaluatePoint.scorePoint(b, p.px, p.py, role);
-                        int s2 = EvaluatePoint.scorePoint(b, p.px, p.py, Position.reverseRole(role));
+                        int s1 = EvaluatePoint.scorePoint(b.getModel(), p.px, p.py, role);
+                        int s2 = EvaluatePoint.scorePoint(b.getModel(), p.px, p.py, Position.reverseRole(role));
 
                         if (s1 >= Position.FIVE) {
                             p.score = (double)-s1;
