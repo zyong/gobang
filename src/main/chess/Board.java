@@ -14,6 +14,7 @@ import java.awt.AWTEvent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+
 /* 棋盘定义
  * 
  */
@@ -42,6 +43,7 @@ public class Board extends JPanel {
 	// 游戏状态数据
 	private int whoIsNow = Position.COMPUTER; // 黑方先行
 	private GameModel model = new GameModel();
+	private EvaluatePoint ep = new EvaluatePoint();
 
 	// 焦点提示
 	private Position focus = new Position(Position.BLACK, -1, -1);
@@ -115,16 +117,16 @@ public class Board extends JPanel {
 			for (int j=0; j<model.matrix.length; j++) {
 				if (model.matrix[i][j].role == Position.EMPTY) {
 					if (hasNeighbor(i,j,1,1)) {
-						int cs = EvaluatePoint.scorePoint(model, i, j, Position.COMPUTER);
-						int hs = EvaluatePoint.scorePoint(model, i, j, Position.HUMAN);
+						int cs = ep.scorePoint(model, i, j, Position.COMPUTER);
+						int hs = ep.scorePoint(model, i, j, Position.HUMAN);
 						comScore[i][j] = cs;
 						humScore[i][j] = hs;
 					}
 				} else if (model.matrix[i][j].role == Position.COMPUTER) {
-					comScore[i][j] = EvaluatePoint.scorePoint(model, i, j, Position.COMPUTER);
+					comScore[i][j] = ep.scorePoint(model, i, j, Position.COMPUTER);
 					humScore[i][j] = 0;
 				} else if (model.matrix[i][j].role == Position.HUMAN) {
-					humScore[i][j] = EvaluatePoint.scorePoint(model, i, j, Position.HUMAN);
+					humScore[i][j] = ep.scorePoint(model, i, j, Position.HUMAN);
 			        comScore[i][j] = 0;
 				}
 			}

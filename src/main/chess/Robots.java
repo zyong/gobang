@@ -16,7 +16,7 @@ public class Robots {
     int role = Position.COMPUTER;
     private GameModel model;
     private Board board;
-    private int deep = 4;
+    private int deep = Config.searchDeep;
     private static final int MAX = Position.FIVE * 100;
     private static final int MIN = -MAX;
     
@@ -84,7 +84,7 @@ public class Robots {
     }
 
     public Position genPosition() throws Exception {
-        Position p = maxmin(deep);
+        Position p = deeping(deep);
         p.role = role;
         return p;
     }
@@ -201,7 +201,7 @@ public class Robots {
      * @throws Exception
      */
     public Position deeping(int deep) throws Exception {
-        if (deep < 2) {
+        if (deep == 0) {
             deep = Config.searchDeep;
         }
         Position result = new Position();

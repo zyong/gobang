@@ -19,6 +19,8 @@ public class GameModel
 	// 所有的经纬线、斜线
 	// 每条线由该直线上经过的点位组成
 	List<Position[]> lines = new ArrayList<>();
+
+	EvaluatePoint ep = new EvaluatePoint();
 	
 	public GameModel()
 	{
@@ -139,7 +141,7 @@ public class GameModel
 			if(p.role == role) {
 				start++;
 
-				if ((i + 4) <= line.length) {
+				if ((i + 4) < line.length) {
 					// 比如 0,1,2,3,4 全白
 					for(int k=1; k<=5;k++) {
 						if (line[k+i].role == p.role) {
@@ -194,8 +196,8 @@ public class GameModel
 				if (matrix[i][j].role == Position.EMPTY && 
 					hasNeihbor(matrix[i][j], 1, 1)) {
 						// 启发式搜索,先计算得分，然后按照得分排序
-					int scoreHum = EvaluatePoint.scorePoint(this, i, j, Position.HUMAN);
-					int scoreCom = EvaluatePoint.scorePoint(this, i, j, Position.COMPUTER);
+					int scoreHum = ep.scorePoint(this, i, j, Position.HUMAN);
+					int scoreCom = ep.scorePoint(this, i, j, Position.COMPUTER);
 					// 分别查看电脑和玩家能否到5，4，3等分值
 					/**
 					 * 首先取自己得分高的位置，如果对方得分比自己高，证明对方棋局有优势要封堵，
@@ -256,235 +258,6 @@ public class GameModel
 		}
 			 
 		return ans;
-	}
-
-	/*
-	 * 启发式评价函数
-	 * 这个是专门给某一个空位打分的，不是给整个棋盘打分的
-	 * 并且是只给某一个角色打分
-	 */
-	private int scorePoint(Position point, int role) {
-		int result = 0;
-		int count = 0;
-		int block = 0;
-		int empty = 0;
-
-		int len = matrix.length;
-
-		// 默认把当前位置当做己方棋子，就是这个棋子已经下了之后的分数
-		count = 1;
-		for (int i=point.py+1;;i++) {
-			if (i >= len) {
-				block++;
-				break;
-			}
-
-			Position p = matrix[point.px][i];
-			if (p.role == Position.EMPTY) {
-				// 如果中间有空的情况
-				if (empty == 0 && i < len-1 && matrix[p.px][i+1].role == role) {
-					// 记录为空的位置
-					empty = count;
-					continue;
-				} else {
-					// 后面也没有子 or empty的值已经存在
-					break;
-				}
-			}
-
-			if (p.role == role) {
-				count++;
-				continue;
-			} else {
-				block++;
-				break;
-			}
-		}
-
-		// 计算左边的棋子
-		for (int i=point.py-1;; i--) {
-			if (i<0) {
-				block++;
-				break;
-			}
-
-			Position p = matrix[point.px][i];
-			if (p.role == Position.EMPTY) {
-				if (empty == 0 && i>0 && matrix[point.px][i-1].role == role) {
-					empty = count;
-					continue;
-				} else {
-					break;
-				}
-			}
-
-			if (p.role == role) {
-				count++;
-				continue;
-			} else {
-				block++;
-				break;
-			}
-		}
-		// 得出纵向得分
-		result += score(count, block, empty);
-
-		return result;
-		
-	}
-
-	private int score(int count, int block, int empty) {
-		if (empty == 0) {
-			if (count >= 5) 
-				return Position.FIVE;
-			if (block == 0) {
-				switch(count) {
-					case 1: return Position.ONE;
-					case 2: return Position.TWO;
-					case 3: return Position.THREE;
-					case 4: return Position.FOUR;
-					default: break;
-
-				}
-			}
-
-			if (block == 1) {
-				switch(count) {
-					case 1: return Position.BLOCKED_ONE;
-					case 2: return Position.BLOCKED_TWO;
-					case 3: return Position.BLOCKED_THREE;
-					case 4: return Position.BLOCKED_FOUR;
-					default: break;
-
-				}
-			}
-			
-		} else if (empty == 1 || empty == count - 1) {
-			//
-			if(count >= 6) {
-				return Position.FIVE;
-			}
-			if(block == 0) {
-				switch(count) {
-					case 2: return Position.TWO;
-					case 3:
-					case 4: return Position.THREE;
-					case 5: return Position.FOUR;
-					default: break;
-				}
-			}
-		} else if (empty == 2 || empty == count - 2) {
-			if (count >= 7) {
-				return Position.FIVE;
-			}
-			if (block == 0) {
-				switch(count) {
-					case 3:
-					case 4:
-					case 5: return Position.THREE;
-					case 6: return Position.FOUR;
-					default: break;
-
-				}
-			}
-
-			if (block == 1) {
-				switch(count) {
-					case 3: return Position.BLOCKED_THREE;
-					case 4: return Position.BLOCKED_THREE;
-					case 5: return Position.BLOCKED_FOUR;
-					case 6: return Position.FOUR;
-					default: break;
-
-				}
-			}
-
-			if (block == 2) {
-				switch(count) {
-					case 4:
-					case 5:
-					case 6: return Position.BLOCKED_FOUR;
-					default: break;
-
-				}
-			}
-		} else if (empty == 3 || empty == count - 3) {
-			if (count >= 8) {
-				return Position.FIVE;
-			}
-			if (block == 0) {
-				switch(count) {
-					case 4:
-					case 5: return Position.THREE;
-					case 6: return Position.THREE * 2;
-					case 7: return Position.FOUR;
-					default: break;
-
-				}
-			}
-
-			if (block == 1) {
-				switch(count) {
-					case 4:
-					case 5:
-					case 6: return Position.BLOCKED_FOUR;
-					case 7: return Position.FOUR;
-					default: break;
-
-				}
-			}
-
-			if (block == 2) {
-				switch(count) {
-					case 4:
-					case 5:
-					case 6:
-					case 7: return Position.BLOCKED_FOUR;
-					default: break;
-
-				}
-			}
-		} else if(empty == 4 || empty == count - 4) {
-			if (count >= 9) {
-				return Position.FIVE;
-			}
-			if (block == 0) {
-				switch(count) {
-					case 5:
-					case 6:
-					case 7:
-					case 8: return Position.FOUR;
-					default: break;
-
-				}
-			}
-			if (block == 1) {
-				switch(count) {
-					case 4:
-					case 5:
-					case 6:
-					case 7: return Position.BLOCKED_FOUR;
-					case 8: return Position.FOUR;
-					default: break;
-
-				}
-			}
-
-			if (block == 2) {
-				switch(count) {
-					case 5:
-					case 6:
-					case 7:
-					case 8: return Position.BLOCKED_FOUR;
-					default: break;
-
-				}
-			}
-		} else if (empty == 5 || empty == count-5) {
-			return Position.FIVE;
-		}
-
-		return 0;
 	}
 
 	public boolean hasNeihbor(Position point, int distance, int count) {

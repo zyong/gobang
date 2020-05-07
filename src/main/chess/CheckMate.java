@@ -17,11 +17,13 @@ public class CheckMate {
     GameModel model;
     Board b;
     Robots robot;
+    EvaluatePoint ep;
 
     public CheckMate(Board b) throws Exception {
         this.b = b;
         this.model = b.getModel();
         this.robot = b.getRobot();
+        this.ep = new EvaluatePoint();
     }
 
     public Position check(Board b, int role, int deep, Boolean onlyFour) throws Exception {
@@ -60,7 +62,7 @@ public class CheckMate {
                 if (model.matrix[i][j].role == Position.EMPTY) {
                     Position p = model.matrix[i][j];
                     if (model.hasNeihbor(p, 2, 1)) {
-                        int s = EvaluatePoint.scorePoint(b.getModel(), p.px, p.py, role);
+                        int s = ep.scorePoint(b.getModel(), p.px, p.py, role);
                         p.score = (double) s;
                         if (s >= Position.FIVE) {
                             result.add(p);
@@ -92,9 +94,9 @@ public class CheckMate {
             for (int j=0; j<model.matrix[0].length; j++) {
                 if (model.matrix[i][j].role == Position.EMPTY) {
                     Position p = model.matrix[i][j];
-                    if (model.hasNeihbor(p, 2, 1)) {
-                        int s1 = EvaluatePoint.scorePoint(b.getModel(), p.px, p.py, role);
-                        int s2 = EvaluatePoint.scorePoint(b.getModel(), p.px, p.py, Position.reverseRole(role));
+                    if (model.hasNeihbor(p, 1, 1)) {
+                        int s1 = ep.scorePoint(b.getModel(), p.px, p.py, role);
+                        int s2 = ep.scorePoint(b.getModel(), p.px, p.py, Position.reverseRole(role));
 
                         if (s1 >= Position.FIVE) {
                             p.score = (double)-s1;
@@ -169,7 +171,7 @@ public class CheckMate {
         model = b.getModel();
         List<Position> result2 = new ArrayList<>();
         int m;
-        for (int i=0; i<points.size(); ) {
+        for (int i=0; i<points.size(); i++) {
             Position p = points.get(i);
             model.matrix[p.px][p.py].role = role;
             m = min(b, role, deep - 1, result2);
@@ -248,8 +250,14 @@ public class CheckMate {
             if(m >= 0) break; //找到一个就行
         }
         long time = (new Date()).getTime() - start;
+
+        StringBuilder sb = new StringBuilder();
+        for (int i=0; i<result.size(); i++) {
+            sb.append("x:" + result.get(i).px + " y:" + result.get(0).py);
+        }
+
         if(!result.isEmpty()) {
-            System.out.print("算杀成功(" + time + "毫秒, "+ debugNodeCount + "个节点):" + JSON.toJSONString(result));
+            System.out.print("算杀成功(" + time + "毫秒, "+ debugNodeCount + "个节点):" + sb.toString());
         } else {
             System.out.print("算杀失败("+time+"毫秒)" );
         }

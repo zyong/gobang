@@ -2,15 +2,15 @@ package main.chess;
 
 public class EvaluatePoint {
 
-    static int result = 0;
-    static int empty = 0;
-    static int radius = 8;
-    static int count = 0;
-    static int block = 0;
-    static int secondCount = 0;
+    int empty = 0;
+    int radius = 8;
+    int count = 0;
+    int block = 0;
+    int secondCount = 0;
 
 
-    public static int scorePoint(GameModel model, int px, int py, int role) {
+    public int scorePoint(GameModel model, int px, int py, int role) {
+        int result = 0;
 
         Position[][] matrix = model.matrix;
         int len = matrix.length;
@@ -78,7 +78,7 @@ public class EvaluatePoint {
         block = 0;
         empty = 0;
 
-        //列的右边
+        //列的下面
         for (int i=px+1; true; i++) {
             if (i>=len) {
                 block++;
@@ -103,7 +103,7 @@ public class EvaluatePoint {
             }
         }
 
-        // 列的右边计算
+        // 列的上面计算
         for (int i=px-1; true; i--) {
             if (i<0) {
                 block++;
@@ -424,152 +424,6 @@ public class EvaluatePoint {
 		}
 
 		return 0;
-	}
-
-    private static int countToScore(int count, int block, int empty) {
-        if (empty <= 0) {
-            if (count >= 5) 
-                return Position.FIVE;
-            if (block == 0) {
-                switch(count) {
-                    case 1: return Position.ONE;
-                    case 2: return Position.TWO;
-                    case 3: return Position.THREE;
-                    case 4: return Position.FOUR;
-                    default: break;
-                }
-            }
-
-            if (block == 1) {
-                switch(count) {
-                    case 1: return Position.BLOCKED_ONE;
-                    case 2: return Position.BLOCKED_TWO;
-                    case 3: return Position.BLOCKED_THREE;
-                    case 4: return Position.BLOCKED_FOUR;
-                    default: break;
-                }
-            }
-        } else if (empty == 1 || empty == count -1) {
-            // 
-            if (count >= 6) {
-                return Position.FIVE;
-            }
-            if (block == 0) {
-                switch(count) {
-                    case 2: return Position.TWO/2;
-                    case 3: return Position.THREE;
-                    case 4: return Position.BLOCKED_FOUR;
-                    case 5: return Position.FOUR;
-                    default: break;
-                }
-            }
-
-            if (block == 1) {
-                switch(count) {
-                    case 2: return Position.BLOCKED_TWO;
-                    case 3: return Position.BLOCKED_THREE;
-                    case 4: return Position.BLOCKED_FOUR;
-                    case 5: return Position.BLOCKED_FOUR;
-                    default: break;
-                }
-            }
-        } else if (empty == 2 || empty == count-2) {
-            if (count >= 7) {
-                return Position.FIVE;
-            }
-
-            if (block == 0) {
-                switch(count) {
-                    case 3: return Position.THREE;
-                    case 4: 
-                    case 5: return Position.BLOCKED_FOUR;
-                    case 6: return Position.FOUR;
-                    default: break;
-                }
-            }
-
-            if (block == 1) {
-                switch(count) {
-                    case 3: return Position.BLOCKED_THREE;
-                    case 4: return Position.BLOCKED_FOUR;
-                    case 5: return Position.BLOCKED_FOUR;
-                    case 6: return Position.FOUR;
-                    default: break;
-                }
-            }
-
-            if (block == 2) {
-                switch(count) {
-                    case 4:
-                    case 5:
-                    case 6: return Position.BLOCKED_FOUR;
-                    default: break;
-                }
-            }
-        } else if (empty == 3 || empty == count - 3) {
-            if (count >= 8) {
-                return Position.FIVE;
-            }
-            if (block == 0) {
-                switch(count) {
-                    case 4:
-                    case 5: return Position.THREE;
-                    case 6: return Position.BLOCKED_FOUR;
-                    case 7: return Position.FOUR;
-                    default: break;
-                }
-            }
-
-            if (block == 1) {
-                switch(count) {
-                    case 4:
-                    case 5:
-                    case 6: return Position.BLOCKED_FOUR;
-                    case 7: return Position.FOUR;
-                    default: break;
-                }
-            }
-
-            if (block == 2) {
-                switch(count) {
-                    case 4:
-                    case 5:
-                    case 6: 
-                    case 7: return Position.BLOCKED_FOUR;
-                    default: break;
-                }
-            }
-        } else if (empty == 4 || empty == count-4) {
-            if (count >= 9) {
-                return Position.FIVE;
-            }
-
-            if (block == 0) {
-                switch(count) {
-                    case 5:
-                    case 6:
-                    case 7: return Position.BLOCKED_FOUR;
-                    case 8: return Position.FOUR;
-                    default: break;
-                }
-            }
-
-            if (block == 2) {
-                switch(count) {
-                    case 5:
-                    case 6:
-                    case 7:
-                    case 8: return Position.BLOCKED_FOUR;
-                    default: break;
-                }
-            }
-        } else if (empty == 5 || empty == count-5) {
-            return Position.FIVE;
-        }
-
-
-
-        return 0;
     }
 
 }
