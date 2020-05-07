@@ -1,6 +1,7 @@
-package my.chess;
+package main.chess;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Random;
 
 
@@ -43,7 +44,7 @@ public class Robots {
         // 初始化一个位置
         Random rand = new Random();
         while (true) {
-            int randIntX = rand.nextInt(6);
+            int randIntX = rand.nextInt(model.matrix.length/3);
             int x;
             int y;
             if (randIntX % 2 == 0) {
@@ -52,7 +53,7 @@ public class Robots {
                 x = n/2 - randIntX;
             }
 
-            int randIntY = rand.nextInt(6);
+            int randIntY = rand.nextInt(model.matrix.length/3);
             if (randIntY % 2 == 0) {
                 y = n/2 + randIntY;
             } else {
@@ -72,21 +73,23 @@ public class Robots {
 
     /**
      * 电脑下棋
+     * 
      * @return {@link Position}
+     * @throws Exception
      */
-    public Position put() {
+    public Position put() throws Exception {
         Position p = genPosition();
         board.put(p);
         return p;
     }
 
-    public Position genPosition() {
+    public Position genPosition() throws Exception {
         Position p = maxmin(deep);
         p.role = role;
         return p;
     }
 
-    protected Position maxmin(int deep) {
+    protected Position maxmin(int deep) throws Exception {
         double best = MIN;
         ArrayList<Position> bestPositions = new ArrayList<>();
 
@@ -102,7 +105,7 @@ public class Robots {
             Position p = points.get(i);
             matrix[p.px][p.py].role = Position.COMPUTER;
             double v = - max(deep-1, MIN, (best > MIN ? best : MIN), Position.HUMAN);
-
+            p.score = v;
             // 对边缘棋子要给分数打折，避免电脑总往边上走
             if (p.px < 3 || p.px > 11 || p.py < 3 || p.py > 11) {
                 v = 0.5 * v;
@@ -118,6 +121,17 @@ public class Robots {
                 bestPositions.add(p);
             }
             matrix[p.px][p.py].role = Position.EMPTY;
+        }
+        // 解决没有最佳棋子的问题
+        if (bestPositions.isEmpty()) {
+            points.sort(
+                new Comparator<Position>(){
+                    @Override
+                    public int compare(Position arg0, Position arg1) {
+                        return arg0.score.compareTo(arg1.score);
+                    }
+            });
+            bestPositions = (ArrayList<Position>)points.subList(0, points.size() - 1);
         }
 
 
@@ -136,12 +150,12 @@ public class Robots {
         return result;
     }
 
-    private double max(int deep, double alpha, double beta, int role) {
+    private double max(int deep, double alpha, double beta, int role) throws Exception {
         double v = evaluate();
         total++;
 
-        Boolean result = model.checkWin(); 
-        if (deep <= 0 || Boolean.TRUE.equals(result)) {
+        int result = model.checkWin(); 
+        if (deep <= 0 || result != Position.EMPTY) {
             return v;
         }
 
@@ -151,7 +165,7 @@ public class Robots {
         for (int i=0; i < points.size(); i++) {
             Position p = points.get(i);
             model.matrix[p.px][p.py].role = role;
-            v = - max(deep - 1, best > alpha ? best : alpha, beta, p.reverseRole(role)) * Config.deepDecrease;
+            v = - max(deep - 1, best > alpha ? best : alpha, beta, Position.reverseRole(role)) * Config.deepDecrease;
             model.matrix[p.px][p.py].role = Position.EMPTY;
 
             if (v > alpha * threshold) {
@@ -164,15 +178,29 @@ public class Robots {
             }
         }
 
+        if ((deep <= 2) && 
+            role == Position.COMPUTER && 
+            best*threshold <= Position.THREE*2 && 
+            best >= threshold * Position.THREE-1
+            ) {
+                CheckMate cm = new CheckMate(board);
+                Position mate = cm.check(board, role, 0, false);
+                if (mate != null) {
+                    return mate.score * 0.8 * (role == Position.COMPUTER ? 1: -1);
+                }
+            }
+
         return best;
     }
 
     /**
      * 迭代加深
+     * 
      * @param deep
      * @return
+     * @throws Exception
      */
-    public Position deeping(int deep) {
+    public Position deeping(int deep) throws Exception {
         if (deep < 2) {
             deep = Config.searchDeep;
         }

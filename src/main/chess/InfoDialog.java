@@ -1,4 +1,4 @@
-package my.chess;
+package main.chess;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -71,7 +71,7 @@ public class InfoDialog extends JDialog
 		okButton.setOpaque(true);
 		okButton.setBackground(new Color(0xFCFCFC));
 		okButton.addActionListener( 
-			e->setVisible(false) // MyDialog.this.setVisible(false)
+			e->setVisible(false) // mainDialog.this.setVisible(false)
 		);
 	}
 	

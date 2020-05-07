@@ -1,4 +1,4 @@
-package my.chess;
+package main.chess;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -14,7 +14,6 @@ import java.awt.AWTEvent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-
 /* 棋盘定义
  * 
  */
@@ -27,20 +26,16 @@ public class Board extends JPanel {
 
 	private static Color bgColor = new Color(0xFFD700);
 
-	public static final int HUMAN = 1;
-	public static final int COMPUTER = 2;
-	public static final int MIXED = 3;
-
 	// socreCache[role][dir][row][column]
 	public int[][][][] scoreCache = new int[3][6][GameModel.N][GameModel.N];
 
-	private int rule = COMPUTER; // 1人和人下，2人和电脑下，3电脑和电脑下
+	private int rule = Position.COMPUTER; // 1人和人下，2人和电脑下，3电脑和电脑下
 	// 说明当前游戏的状态是否还在继续
 	private boolean isActive = false;
 
 	private Rectangle square; // 中间广场
 	private int cell; // 单元格大小
-	private static final int  N = GameModel.N;
+	private static final int N = GameModel.N;
 	private int[] baseH = new int[GameModel.N + 1]; // 水平方向, 11条经线的位置
 	private int[] baseV = new int[GameModel.N + 1]; // 竖起方向, 11条纬线的位置
 
@@ -64,14 +59,8 @@ public class Board extends JPanel {
 
 	private int[][] humScore = new int[N][N];
 
-
 	/**
-	 *  业务逻辑部分
-	 * 1.初始化棋盘
-	 * 	1.定义棋盘大小，初始化棋盘事件，初始化棋子
-	 * 2.下棋数据操作
-	 *  1.添加棋子，删除棋子，悔棋，前进
-	 * 3.位置分值计算
+	 * 业务逻辑部分 1.初始化棋盘 1.定义棋盘大小，初始化棋盘事件，初始化棋子 2.下棋数据操作 1.添加棋子，删除棋子，悔棋，前进 3.位置分值计算
 	 */
 
 	public Board() {
@@ -81,9 +70,16 @@ public class Board extends JPanel {
 		// 鼠标点击事件
 		enableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 	}
-	
+
 	public GameModel getModel() {
 		return model;
+	}
+
+	public Robots getRobot() throws Exception {
+		if (robotA != null) {
+			return robotA;
+		}
+		throw new Exception("RobotA is null");
 	}
 
 	public void put(Position p) {
@@ -119,16 +115,16 @@ public class Board extends JPanel {
 			for (int j=0; j<model.matrix.length; j++) {
 				if (model.matrix[i][j].role == Position.EMPTY) {
 					if (hasNeighbor(i,j,1,1)) {
-						int cs = EvaluatePoint.scorePoint(this, i, j, Position.COMPUTER, 0);
-						int hs = EvaluatePoint.scorePoint(this, i, j, Position.HUMAN, 0);
+						int cs = EvaluatePoint.scorePoint(this, i, j, Position.COMPUTER);
+						int hs = EvaluatePoint.scorePoint(this, i, j, Position.HUMAN);
 						comScore[i][j] = cs;
 						humScore[i][j] = hs;
 					}
 				} else if (model.matrix[i][j].role == Position.COMPUTER) {
-					comScore[i][j] = EvaluatePoint.scorePoint(this, i, j, Position.COMPUTER, 0);
+					comScore[i][j] = EvaluatePoint.scorePoint(this, i, j, Position.COMPUTER);
 					humScore[i][j] = 0;
 				} else if (model.matrix[i][j].role == Position.HUMAN) {
-					humScore[i][j] = EvaluatePoint.scorePoint(this, i, j, Position.HUMAN, 0);
+					humScore[i][j] = EvaluatePoint.scorePoint(this, i, j, Position.HUMAN);
 			        comScore[i][j] = 0;
 				}
 			}
@@ -409,10 +405,6 @@ public class Board extends JPanel {
 		// 归纳到最近的整数 (点击在交叉点附近，都会被归纳到交叉点)
 		int px = Math.round((float) (x - square.x) / cell) - 1;
 		int py = Math.round((float) (y - square.y) / cell) - 1;
-		if (Config.DEBUG) {
-			System.out.printf("x: %d y: %d, sqx:%d, sqy:%d cell:%d", px, py, square.x, square.y, cell);
-		}
-
 
 		return model.at(px, py);
 	}
@@ -452,16 +444,16 @@ public class Board extends JPanel {
 				p.role = whoIsNow;
 				p.role = Position.HUMAN;
 				whoIsNow = 0 - whoIsNow; // 交换先手
+				checkWin();
 
 				// if human vs computer, notify the competitor
-				if (isActive && rule == COMPUTER) {
+				if (isActive && rule == Position.COMPUTER) {
 					// 鼠标点击事件
 					disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 					focus.px = -1;
 					focus.py = -1;
 					notifyRobots();
 				}
-				checkWin();
 			}
 		}
 		super.processMouseEvent(e);
@@ -471,12 +463,12 @@ public class Board extends JPanel {
 	 * 设置游戏规则初始化
 	 * @param rule
 	 */
-	protected void setRule(int rule) {
+	public void setRule(int rule) {
 		this.rule = rule;
 		this.isActive = true;
 
 		// 根据棋局设置添加robots
-		if (rule == COMPUTER) {
+		if (rule == Position.COMPUTER) {
 			this.robotA = new Robots(this);
 		}
 	}
@@ -487,7 +479,7 @@ public class Board extends JPanel {
 	 */
 	private void clickRestartButton(MouseEvent e) {
 		model.reset();
-		setRule(HUMAN);
+		setRule(Position.COMPUTER);
 		whoIsNow = Position.BLACK;
 		isActive = true;
 		repaint();
@@ -500,7 +492,12 @@ public class Board extends JPanel {
 	protected void notifyRobots() {
 		Runnable runx = new Runnable() {
 			public void run() {
-				robotA.put();
+				try {
+					robotA.put();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				checkWin();
 				// 鼠标点击事件
 				enableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
 				whoIsNow = 0 - robotA.role;
@@ -515,15 +512,15 @@ public class Board extends JPanel {
 	 */
 	protected void checkWin() {
 		// 检查输赢
-		Boolean result = model.checkWin();
-		if (Boolean.TRUE.equals(result)) {
+		int result = model.checkWin();
+		if (result != Position.EMPTY) {
 			System.out.println("游戏结束!");
 
 			// 提示一个对话框
-			if (whoIsNow == Position.COMPUTER)
-				new InfoDialog(this, "You Lose").exec();
-			else
+			if (result != Position.COMPUTER)
 				new InfoDialog(this, "You Win").exec();
+			else
+				new InfoDialog(this, "You Lose").exec();
 
 			isActive = false;
 		}

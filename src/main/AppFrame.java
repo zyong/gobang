@@ -1,4 +1,4 @@
-package my;
+package main;
 
 import java.awt.BorderLayout;
 
@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import my.chess.Board;
+import main.chess.Board;
 
 
 public class AppFrame extends JFrame

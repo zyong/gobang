@@ -1,4 +1,4 @@
-package my;
+package main;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -24,7 +24,7 @@ public class RootPanel extends JPanel
 	public RootPanel()
 	{
 		try {
-			URL url = getClass().getResource("/res/background.jpg");
+			URL url = getClass().getResource("res/background.jpg");
 			bgImage = ImageIO.read(url);
 		}catch(Exception e)
 		{

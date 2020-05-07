@@ -14,7 +14,7 @@
             "type": "java",
             "name": "Debug (Launch)-App<gobang_48c872d>",
             "request": "launch",
-            "mainClass": "my.App",
+            "mainClass": "main.App",
             "projectName": "gobang_48c872d"
         }
     ]

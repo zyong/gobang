@@ -1,4 +1,4 @@
-package my.chess;
+package main.chess;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,44 +107,42 @@ public class GameModel
 	// 打印出该行内所有的点位
 	public void printLine(String name, Position[] line)
 	{
-		System.out.print(name);
-		for(int i=0; i<line.length; i++)
-		{
-			Position p = line[i];
-			System.out.printf("(%2d,%2d) ", p.px, p.py);
-		}
-		System.out.println();
+		return;
 	}
 	
 	// 检查所有直线上，是否存在五子连珠。
-	public Boolean checkWin()
+	public int checkWin()
 	{
 		for(Position[] line : lines)
 		{
-			Boolean result = checkWin(line);
+			Boolean result = checkWin(line, Position.COMPUTER);
 			if (Boolean.TRUE.equals(result)) {
-				return true;
+				return Position.COMPUTER;
+			}
+
+			result = checkWin(line, Position.HUMAN);
+			if (Boolean.TRUE.equals(result)) {
+				return Position.HUMAN;
 			}
 		}
-		return false;
+		return Position.EMPTY;
 	}
 	
 	// 检查一条直线上，是否存在五子连珠。如果 存在，则返回这五个连续的点位
-	public Boolean checkWin(Position[] line)
+	public Boolean checkWin(Position[] line, int role)
 	{
-		int role = Position.EMPTY;
 		int start = 0;
+
 		for(int i=0; i<line.length;i++)
 		{
 			Position p = line[i];
-			if(p.role != role) {
+			if(p.role == role) {
 				start++;
-				role = p.role;
 
 				if ((i + 4) <= line.length) {
 					// 比如 0,1,2,3,4 全白
-					for(int k=i+1; k<=5;k++) {
-						if (line[k].role == role) {
+					for(int k=1; k<=5;k++) {
+						if (line[k+i].role == p.role) {
 							start++;
 							if (start == 5) {
 								return true;
@@ -154,6 +152,7 @@ public class GameModel
 							break;
 						}
 					}
+					start = 0;
 				}
 				
 			}
@@ -194,6 +193,7 @@ public class GameModel
             for (int j=0; j<matrix[0].length; j++) {
 				if (matrix[i][j].role == Position.EMPTY && 
 					hasNeihbor(matrix[i][j], 2, 2)) {
+						// 启发式搜索,先计算得分，然后按照得分排序
 					int scoreHum = scorePoint(matrix[i][j], Position.HUMAN);
 					int scoreCom = scorePoint(matrix[i][j], Position.COMPUTER);
 					// 分别查看电脑和玩家能否到5，4，3等分值
@@ -226,6 +226,7 @@ public class GameModel
 				}
             }
 		}
+		
 		
 		if (!fives.isEmpty()) {
 			ans.add(fives.get(0));
@@ -481,7 +482,7 @@ public class GameModel
 		return 0;
 	}
 
-	private boolean hasNeihbor(Position point, int distance, int count) {
+	public boolean hasNeihbor(Position point, int distance, int count) {
 		int len = matrix.length;
 		int startX = point.px - distance;
 		int endX = point.px + distance;
