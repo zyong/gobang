@@ -97,7 +97,7 @@ public class Board extends JPanel {
 			System.out.printf("remove point px:%d py:%d role:%d%n", p.px, p.py, p.role);
 		}
 
-		model.matrix[p.px][p.py].role = p.role;
+		model.remove(p);
 		repaint();
 	}
 
@@ -172,19 +172,19 @@ public class Board extends JPanel {
 
 		// 计算中央的方形广场
 		int size = w < h ? w : h;
-		size -= 60; // padding
+		size -= 76; // padding
 		int x = (w - size) / 2;
 		int y = (h - size) / 2;
 
 		// 计算经线和纬线的位置
-		cell = size / N;
+		cell = size / (N-1);
 		for (int i = 0; i <= N; i++) {
 			baseH[i] = x + i * cell;
 			baseV[i] = y + i * cell;
 		}
 
 		// 广场的精确位置
-		square = new Rectangle(x, y, N * cell, N * cell);
+		square = new Rectangle(x, y, (N-1) * cell, (N-1) * cell);
 
 		// 重启按钮的位置 ( 位于广场下方 )
 		restartButton.width = 120;
@@ -322,13 +322,13 @@ public class Board extends JPanel {
 		// 绘制经纬线
 		g2d.setPaint(new Color(0x606060));
 		g2d.setStroke(new BasicStroke(1.2f));
-		for (int i = 0; i <= N; i++) {
+		for (int i = 0; i < N; i++) {
 			String str = String.valueOf(i);
 			int length = str.length();
 			g2d.drawChars(str.toCharArray() , 0, length, baseH[0] - 20, baseV[i] + 7);
-			g2d.drawLine(baseH[0], baseV[i], baseH[N], baseV[i]);
+			g2d.drawLine(baseH[0], baseV[i], baseH[N-1], baseV[i]);
 			g2d.drawChars(str.toCharArray() , 0, length, baseH[i] - 5 , baseV[0] - 10);
-			g2d.drawLine(baseH[i], baseV[0], baseH[i], baseV[N]);
+			g2d.drawLine(baseH[i], baseV[0], baseH[i], baseV[N-1]);
 		}
 
 		// 绘制游戏数据：模子

@@ -187,6 +187,12 @@ public class GameModel
 		matrix[x][y].mark = ++time;
 	}
 
+	public void remove(Position p) {
+		matrix[p.px][p.py].role = Position.EMPTY;
+		matrix[p.px][p.py].mark = 0;
+
+	}
+
 	public List<Position> genPosition(int deep) {
 		ArrayList<Position> fives = new ArrayList<>();
         ArrayList<Position> fours = new ArrayList<>();
