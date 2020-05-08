@@ -7,7 +7,7 @@ import main.chess.Board;
 import main.chess.EvaluatePoint;
 import main.chess.GameModel;
 import main.chess.Position;
-import main.chess.Config;
+import main.Config;
 
 public class EvaluatePointTest {
     Board b;

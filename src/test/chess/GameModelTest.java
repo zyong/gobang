@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import main.chess.GameModel;
 import main.chess.Position;
-import main.chess.Config;
+import main.Config;
 
 import static org.junit.Assert.assertEquals;
 

@@ -14,6 +14,8 @@ import java.awt.AWTEvent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import main.Config;
+
 
 /* 棋盘定义
  * 
@@ -43,7 +45,6 @@ public class Board extends JPanel {
 	// 游戏状态数据
 	private int whoIsNow = Position.COMPUTER; // 黑方先行
 	private GameModel model = new GameModel();
-	private EvaluatePoint ep = new EvaluatePoint();
 
 	// 焦点提示
 	private Position focus = new Position(Position.BLACK, -1, -1);
@@ -56,10 +57,6 @@ public class Board extends JPanel {
 
 	// 人与机器对战按钮的位置
 	private Rectangle humandrobotButton = new Rectangle();
-
-	private int[][] comScore = new int[N][N];
-
-	private int[][] humScore = new int[N][N];
 
 	/**
 	 * 业务逻辑部分 1.初始化棋盘 1.定义棋盘大小，初始化棋盘事件，初始化棋子 2.下棋数据操作 1.添加棋子，删除棋子，悔棋，前进 3.位置分值计算
@@ -102,61 +99,6 @@ public class Board extends JPanel {
 	}
 
 	/**
-	 * 棋局的开局设置
-	 * 1、设置初始棋子的位置（可以有多中变化）
-	 * 2、设置变量的初始值
-	 */
-	public void init() {
-		initScore();
-	}
-
-
-	public void initScore() {
-		for (int i=0; i<model.matrix.length;i++) {
-			for (int j=0; j<model.matrix.length; j++) {
-				if (model.matrix[i][j].role == Position.EMPTY) {
-					if (hasNeighbor(i,j,1,1)) {
-						int cs = ep.scorePoint(model, i, j, Position.COMPUTER);
-						int hs = ep.scorePoint(model, i, j, Position.HUMAN);
-						comScore[i][j] = cs;
-						humScore[i][j] = hs;
-					}
-				} else if (model.matrix[i][j].role == Position.COMPUTER) {
-					comScore[i][j] = ep.scorePoint(model, i, j, Position.COMPUTER);
-					humScore[i][j] = 0;
-				} else if (model.matrix[i][j].role == Position.HUMAN) {
-					humScore[i][j] = ep.scorePoint(model, i, j, Position.HUMAN);
-			        comScore[i][j] = 0;
-				}
-			}
-		}
-	}
-
-	private boolean hasNeighbor(int x, int y, int distance, int count) {
-		int len = model.matrix.length;
-		int startX = x - distance;
-		int endX = x+distance;
-		int startY = y - distance;
-		int endY = y + distance;
-
-		for (int i=startX;i<=endX; i++) {
-			if (i<0 ||i>=len) continue;
-			for (int j=startY;j<=endY;j++) {
-				if (j<0 || j>=len) continue;
-				if (i==x && j==y) continue;
-				if (model.matrix[i][j].role == Position.EMPTY) {
-					count--;
-					if (count <= 0) 
-						return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-
-	/**
 	 * 展现相关部分
 	 * 1、计算棋局的坐标，包括board，开始按钮，经纬线等
 	 * 2、画棋局
@@ -172,7 +114,7 @@ public class Board extends JPanel {
 
 		// 计算中央的方形广场
 		int size = w < h ? w : h;
-		size -= 76; // padding
+		size -= Config.magin;// padding
 		int x = (w - size) / 2;
 		int y = (h - size) / 2;
 

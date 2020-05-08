@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import main.chess.Board;
 import main.chess.CheckMate;
-import main.chess.Config;
+import main.Config;
 import main.chess.GameModel;
 import main.chess.Position;
 
