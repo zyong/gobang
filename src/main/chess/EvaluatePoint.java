@@ -15,12 +15,12 @@ public class EvaluatePoint {
         Position[][] matrix = model.matrix;
         int len = matrix.length;
   
-         //横向
+         //列
         count = 1;  //默认把当前位置当做己方棋子。因为算的是当前下了一个己方棋子后的分数
         block = 0;
         empty = 0;
 
-        // 从右边开始计算
+        // 从下面开始计算
         for (int i=py+1; true; i++) {
             if (i>=len) {
                 block++;
@@ -73,19 +73,19 @@ public class EvaluatePoint {
 
         result += score(count, block, empty);
 
-        //列计算
+        //行计算
         count = 1;
         block = 0;
         empty = 0;
 
-        //列的下面
+        //行的下面
         for (int i=px+1; true; i++) {
             if (i>=len) {
                 block++;
                 break;
             }
 
-            Position p = matrix[i][px];
+            Position p = matrix[i][py];
             if (p.role == Position.EMPTY) {
                 if (empty == 0 && i<len-1 && matrix[i+1][py].role == role) {
                     empty = count;
@@ -103,7 +103,7 @@ public class EvaluatePoint {
             }
         }
 
-        // 列的上面计算
+        // 行的上面计算
         for (int i=px-1; true; i--) {
             if (i<0) {
                 block++;

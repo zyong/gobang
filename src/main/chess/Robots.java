@@ -150,14 +150,18 @@ public class Robots {
             sb.append("x:" + p.px + " y:" + p.py);
         }
 
-        System.out.println("当前局面分数：" + best +", 待选节点" + sb.toString());
-        System.out.println("搜索节点数" + total + " 剪枝节点数" + abCut);
+
         Position result = bestPositions.get((int) Math.floor(bestPositions.size() * Math.random()));
         result.score = best;
         steps++;
         total += count;
-        System.out.println("当前返回节点：x:" + result.px + " y:" + result.py);
-        System.out.println("");
+        
+        if (Config.DEBUG) {
+            System.out.println("当前局面分数：" + best +", 待选节点" + sb.toString());
+            System.out.println("搜索节点数" + total + " 剪枝节点数" + abCut);
+            System.out.println("当前返回节点：x:" + result.px + " y:" + result.py);
+            System.out.println("");
+        }
         return result;
     }
 

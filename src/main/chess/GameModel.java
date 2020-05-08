@@ -198,6 +198,12 @@ public class GameModel
 						// 启发式搜索,先计算得分，然后按照得分排序
 					int scoreHum = ep.scorePoint(this, i, j, Position.HUMAN);
 					int scoreCom = ep.scorePoint(this, i, j, Position.COMPUTER);
+
+					if (Config.DEBUG) {
+						System.out.println("gen point x:" + i + " y:" + j);
+						System.out.println("gen point scoreCom:" + scoreCom);
+						System.out.println("gen point scoreHum:" + scoreHum);
+					}
 					// 分别查看电脑和玩家能否到5，4，3等分值
 					/**
 					 * 首先取自己得分高的位置，如果对方得分比自己高，证明对方棋局有优势要封堵，

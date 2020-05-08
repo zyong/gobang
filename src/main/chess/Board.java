@@ -409,8 +409,8 @@ public class Board extends JPanel {
 	 */
 	private Position testPosition(int x, int y) {
 		// 归纳到最近的整数 (点击在交叉点附近，都会被归纳到交叉点)
-		int px = Math.round((float) (x - square.x) / cell) - 1;
-		int py = Math.round((float) (y - square.y) / cell) - 1;
+		int px = Math.round((float) (x - square.x) / cell);
+		int py = Math.round((float) (y - square.y) / cell);
 
 		return model.at(px, py);
 	}

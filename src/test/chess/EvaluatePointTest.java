@@ -14,7 +14,7 @@ public class EvaluatePointTest {
     EvaluatePoint ep;
 
     public EvaluatePointTest() {
-        Config.N = 7;
+        Config.N = 15;
         b = new Board();
         ep = new EvaluatePoint();
     }
@@ -46,6 +46,38 @@ public class EvaluatePointTest {
         b.getModel().update(4,4,Position.COMPUTER);
 
         int score = ep.scorePoint(model, 5, 5, Position.COMPUTER);
+        Assert.assertEquals((long)(Position.THREE + 3*Position.ONE), score);
+    }
+
+    @Test
+    public void scorePoint4() {
+        GameModel model = b.getModel();
+        model.update(4,5,Position.HUMAN);
+        model.update(4,6,Position.HUMAN);
+        model.update(11,8,Position.COMPUTER);
+        model.update(11,9,Position.COMPUTER);
+
+
+        int score = ep.scorePoint(model, 11, 7, Position.COMPUTER);
+        Assert.assertEquals((long)(Position.THREE + 3*Position.ONE), score);
+    }
+
+    @Test
+    public void scorePoint5() {
+        GameModel model = b.getModel();
+        model.update(7,10,Position.HUMAN);
+        model.update(8,10,Position.HUMAN);
+        model.update(9,10,Position.HUMAN);
+        model.update(10,10,Position.HUMAN);
+        model.update(10,9,Position.HUMAN);
+
+        model.update(10,8,Position.COMPUTER);
+        model.update(11,8,Position.COMPUTER);
+        model.update(11,9,Position.COMPUTER);
+        model.update(11,10,Position.COMPUTER);
+
+
+        int score = ep.scorePoint(model, 6, 10, Position.HUMAN);
         Assert.assertEquals((long)(Position.THREE + 3*Position.ONE), score);
     }
 }
