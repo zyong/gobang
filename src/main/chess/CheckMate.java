@@ -257,9 +257,9 @@ public class CheckMate {
         }
 
         if(!result.isEmpty()) {
-            System.out.print("算杀成功(" + time + "毫秒, "+ debugNodeCount + "个节点):" + sb.toString());
+            System.out.println("算杀成功(" + time + "毫秒, "+ debugNodeCount + "个节点):" + sb.toString());
         } else {
-            System.out.print("算杀失败("+time+"毫秒)" );
+            System.out.println("算杀失败("+time+"毫秒)" );
         }
         return result;
     }

@@ -324,7 +324,11 @@ public class Board extends JPanel {
 		g2d.setPaint(new Color(0x606060));
 		g2d.setStroke(new BasicStroke(1.2f));
 		for (int i = 0; i <= N; i++) {
+			String str = String.valueOf(i);
+			int length = str.length();
+			g2d.drawChars(str.toCharArray() , 0, length, baseH[0] - 20, baseV[i] + 7);
 			g2d.drawLine(baseH[0], baseV[i], baseH[N], baseV[i]);
+			g2d.drawChars(str.toCharArray() , 0, length, baseH[i] - 5 , baseV[0] - 10);
 			g2d.drawLine(baseH[i], baseV[0], baseH[i], baseV[N]);
 		}
 

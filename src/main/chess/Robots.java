@@ -2,6 +2,7 @@ package main.chess;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.PriorityQueue;
 import java.util.Random;
 
 
@@ -19,7 +20,8 @@ public class Robots {
     private int deep = Config.searchDeep;
     private static final int MAX = Position.FIVE * 100;
     private static final int MIN = -MAX;
-    
+    String SEPARATOR = System.getProperty("line.separator");
+
 
     // 总节点数， 剪枝的节点数
     int total = 0;  //总节点数
@@ -94,6 +96,11 @@ public class Robots {
         ArrayList<Position> bestPositions = new ArrayList<>();
 
         ArrayList<Position> points = (ArrayList<Position>) model.genPosition(deep);
+        StringBuilder sb = new StringBuilder();
+        for (int i=0; i<points.size(); i++) {
+            sb.append("point x:" + points.get(i).px + " y:"+ points.get(0).py + SEPARATOR);
+        }
+        System.out.println("gen Points:" + sb.toString());
 
         count = 0;
         abCut = 0;
@@ -116,6 +123,9 @@ public class Robots {
                 bestPositions.add(p);
             }
 
+            //将分值提供给棋子，以提供给后面比较选择
+            p.score = v;
+
             if (v > best * threshold) {
                 best = v;
                 bestPositions.clear();
@@ -135,7 +145,7 @@ public class Robots {
         }
 
 
-        StringBuilder sb = new StringBuilder();
+        sb = new StringBuilder();
         for (Position p: bestPositions) {
             sb.append("x:" + p.px + " y:" + p.py);
         }
@@ -146,7 +156,8 @@ public class Robots {
         result.score = best;
         steps++;
         total += count;
-        System.out.println("当前返回节点：x:" + result.px + " y:" + result.px);
+        System.out.println("当前返回节点：x:" + result.px + " y:" + result.py);
+        System.out.println("");
         return result;
     }
 
@@ -179,14 +190,13 @@ public class Robots {
         }
 
         if ((deep <= 2) && 
-            role == Position.COMPUTER && 
             best*threshold <= Position.THREE*2 && 
             best >= threshold * Position.THREE-1
             ) {
                 CheckMate cm = new CheckMate(board);
                 Position mate = cm.check(board, role, 0, false);
                 if (mate != null) {
-                    return mate.score * 0.8 * (role == Position.COMPUTER ? 1: -1);
+                    return mate.score * threshold * (role == Position.COMPUTER ? 1: -1);
                 }
             }
 
@@ -205,12 +215,26 @@ public class Robots {
             deep = Config.searchDeep;
         }
         Position result = new Position();
+        PriorityQueue<Position> q = new PriorityQueue<>(deep/2, new Comparator<Position>() {
+
+            @Override
+            public int compare(Position o1, Position o2) {
+                if (o1.score > o2.score) 
+                    return -1;
+                else if (o1.score < o2.score) 
+                    return 1;
+                else
+                    return 0;
+            }
+            
+        });
         for (int i=2; i <= deep; i+=2) {
             result = maxmin(i);
+            q.add(result);
             if (result.score * threshold > Position.FOUR) 
                 return result;
         }
-        return result;
+        return q.peek();
     }
 
     private int evaluate() {
