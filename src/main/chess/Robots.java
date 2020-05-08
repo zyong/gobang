@@ -65,7 +65,7 @@ public class Robots {
             Position start =
             model.matrix[x][y];
             if (start.role == Position.EMPTY) {
-                start.role = Position.COMPUTER;
+                model.update(x, y, Position.COMPUTER);
                 break;
             } else if (start.role != Position.EMPTY) {
                 continue;
@@ -155,7 +155,7 @@ public class Robots {
         result.score = best;
         steps++;
         total += count;
-        
+
         if (Config.DEBUG) {
             System.out.println("当前局面分数：" + best +", 待选节点" + sb.toString());
             System.out.println("搜索节点数" + total + " 剪枝节点数" + abCut);

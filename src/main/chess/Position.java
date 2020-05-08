@@ -29,7 +29,7 @@ public class Position
 	public int role = EMPTY; // 该点位的值
 	public int px = 0; // 水平位置坐标 :0,1,2,...,10
 	public int py = 0; // 竖直位置坐标 :0,1,2,...,10
-	public boolean mark = false;// 游戏结束时的标记,五子连珠的特殊显示标识
+	public int mark = 0; // 游戏结束时的标记,五子连珠的特殊显示标识
 	public Double score = 0.0;
 
 	

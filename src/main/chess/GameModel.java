@@ -21,6 +21,9 @@ public class GameModel
 	List<Position[]> lines = new ArrayList<>();
 
 	EvaluatePoint ep = new EvaluatePoint();
+
+	// 下棋次数
+	int time = 0;
 	
 	public GameModel()
 	{
@@ -172,14 +175,16 @@ public class GameModel
 			{
 				Position p = matrix[i][k];
 				p.role = Position.EMPTY;
-				p.mark = false;
+				p.mark = 0;
 			}
 		}
+		time = 0;
 	}
 
 	public void update(int x, int y, int role)
 	{
 		matrix[x][y].role = role;
+		matrix[x][y].mark = ++time;
 	}
 
 	public List<Position> genPosition(int deep) {

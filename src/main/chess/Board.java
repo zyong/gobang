@@ -88,8 +88,7 @@ public class Board extends JPanel {
 		if (Config.DEBUG) {
 			System.out.printf("put point px:%d py:%d role:%d%n", p.px, p.py, p.role);
 		}
-
-		model.matrix[p.px][p.py].role = p.role;
+		model.update(p.px, p.py, p.role);
 		repaint();
 	}
 
@@ -233,7 +232,7 @@ public class Board extends JPanel {
 				cx, 
 				cy, 
 				whoIsNow == Position.COMPUTER, 
-				false
+				0
 			);
 			g2d.setPaint(new Color(0x202020));
 			g2d.setFont(g2d.getFont().deriveFont(18.0f));
@@ -341,6 +340,9 @@ public class Board extends JPanel {
 
 				if (p.role != Position.EMPTY) {
 					// 棋子是一个圆形, x,y为圆心, r为半径
+					if (p.mark > 0 && p.mark < model.time) {
+						p.mark = 0;
+					}
 					int x = baseH[p.px];
 					int y = baseV[p.py];
 					drawChess(g2d, x, y, p.role == Position.BLACK, p.mark);
@@ -359,7 +361,7 @@ public class Board extends JPanel {
 	}
 
 	// x,y: 棋子的坐标 (px)
-	private void drawChess(Graphics2D g2d, int x, int y, boolean black, boolean mark) {
+	private void drawChess(Graphics2D g2d, int x, int y, boolean black, int mark) {
 		int r = (int) (cell * 0.43);
 
 		// 设定黑棋和白棋的颜色
@@ -379,7 +381,7 @@ public class Board extends JPanel {
 		g2d.drawOval(x - r, y - r, r * 2, r * 2);
 
 		// 胜利时的特殊标识
-		if (mark) {
+		if (mark > 0) {
 			Path2D path = new Path2D.Double();
 			// 通过路径来画一个图形，在路径里面填充一个颜色,然后用g2d来实现path
 			path.moveTo((double)x - 5, (double)y + 4);
@@ -434,6 +436,7 @@ public class Board extends JPanel {
 				setRule(Position.COMPUTER);
 				model.reset();
 				robotA.start();
+				this.isActive = true;
 				repaint();
 				whoIsNow = Position.HUMAN;
 				return;
@@ -447,8 +450,7 @@ public class Board extends JPanel {
 			// 人下了一子
 			Position p = testPosition(e.getX(), e.getY());
 			if (p != null && p.role == Position.EMPTY) {
-				p.role = whoIsNow;
-				p.role = Position.HUMAN;
+				model.update(p.px, p.py, Position.HUMAN);
 				whoIsNow = 0 - whoIsNow; // 交换先手
 				checkWin();
 
@@ -471,7 +473,6 @@ public class Board extends JPanel {
 	 */
 	public void setRule(int rule) {
 		this.rule = rule;
-		this.isActive = true;
 
 		// 根据棋局设置添加robots
 		if (rule == Position.COMPUTER) {
@@ -486,7 +487,7 @@ public class Board extends JPanel {
 	private void clickRestartButton(MouseEvent e) {
 		model.reset();
 		setRule(Position.COMPUTER);
-		whoIsNow = Position.BLACK;
+		whoIsNow = Position.WHITE;
 		isActive = true;
 		repaint();
 		return;
