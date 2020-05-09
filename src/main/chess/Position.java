@@ -44,6 +44,14 @@ public class Position
 		this.py = py;
 	}
 
+	public Position(Position p) {
+		role = p.role;
+		px = p.px;
+		py = p.py;
+		mark = p.mark;
+		score = p.score;
+	}
+
 	public static int reverseRole(int role) {
 		if (role == HUMAN) {
 			return COMPUTER;
@@ -51,4 +59,5 @@ public class Position
 			return HUMAN;
 		}
 	}
+
 }

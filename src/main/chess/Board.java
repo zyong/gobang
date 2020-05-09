@@ -58,6 +58,10 @@ public class Board extends JPanel {
 	// 人与机器对战按钮的位置
 	private Rectangle humandrobotButton = new Rectangle();
 
+	// 悔棋和反悔按钮
+	private Rectangle prevButton = new Rectangle();
+	private Rectangle nextButton = new Rectangle();
+
 	/**
 	 * 业务逻辑部分 1.初始化棋盘 1.定义棋盘大小，初始化棋盘事件，初始化棋子 2.下棋数据操作 1.添加棋子，删除棋子，悔棋，前进 3.位置分值计算
 	 */
@@ -82,20 +86,23 @@ public class Board extends JPanel {
 	}
 
 	public void put(Position p) {
-		if (Config.DEBUG) {
-			System.out.printf("put point px:%d py:%d role:%d%n", p.px, p.py, p.role);
-		}
+
 		model.update(p.px, p.py, p.role);
 		repaint();
 	}
 
-	public void remove(Position p) {
-		if (Config.DEBUG) {
-			System.out.printf("remove point px:%d py:%d role:%d%n", p.px, p.py, p.role);
+	public void remove() {
+		if (isActive && model.isBackward()) {
+			model.backward();
+			repaint();
 		}
+	}
 
-		model.remove(p);
-		repaint();
+	public void forward() {
+		if (isActive && model.isForward()) {
+			model.forward();
+			repaint();
+		}
 	}
 
 	/**
@@ -139,6 +146,19 @@ public class Board extends JPanel {
 		humandrobotButton.height = 40;
 		humandrobotButton.x = square.x;
 		humandrobotButton.y = square.y + square.height + 20;
+
+		// prevButton
+		prevButton.width = 60;
+		prevButton.height = 40;
+		prevButton.x = square.x + square.width - 140;
+		prevButton.y = square.y + square.height + 20;
+
+		// nextButton
+		nextButton.width = 60;
+		nextButton.height = 40;
+		nextButton.x = square.x + square.width - 60;
+		nextButton.y = square.y + square.height + 20;
+
 	}
 
 	private void paintHit(Graphics g) {
@@ -190,11 +210,11 @@ public class Board extends JPanel {
 			Rectangle rect = restartButton;
 
 			// 画圆角矩形
-			g2d.setPaint(new Color(0xFFD700));
+			g2d.setPaint(new Color(Config.YELLOW));
 			g2d.fillRoundRect(rect.x, rect.y, rect.width, rect.height, 16, 16);
 
 			// 画文字
-			g2d.setPaint(new Color(0x303030));
+			g2d.setPaint(new Color(Config.BLACK));
 			g2d.setFont(new Font("微软雅黑", Font.PLAIN, 14));
 			String text = "再来一局";
 
@@ -220,13 +240,81 @@ public class Board extends JPanel {
 			Rectangle rect = humandrobotButton;
 
 			// 画圆角矩形
-			g2d.setPaint(new Color(0xFFD700));
+			g2d.setPaint(new Color(Config.YELLOW));
 			g2d.fillRoundRect(rect.x, rect.y, rect.width, rect.height, 16, 16);
 
 			// 画文字
-			g2d.setPaint(new Color(0x303030));
+			g2d.setPaint(new Color(Config.BLACK));
 			g2d.setFont(new Font("微软雅黑", Font.PLAIN, 14));
 			String text = "人机对战";
+
+			FontMetrics fm = g2d.getFontMetrics(g2d.getFont());
+			int fontSize = fm.getHeight(); // 字高
+			int textWidth = fm.stringWidth(text);
+			int leading = fm.getLeading();
+			int descent = fm.getDescent(); // bottom->baseline 的高度
+
+			int x = 0;
+			int y = 0;
+			x = rect.x + (rect.width - textWidth) / 2; // 水平居中
+			y = rect.y + rect.height / 2 + (fontSize - leading) / 2 - descent; // 竖直居中
+			g2d.drawString(text, x, y);
+		}
+	}
+
+	protected void paintPrevNextButton(Graphics g) {
+		Graphics2D g2d = (Graphics2D) g;
+
+		if (prevButton != null) {
+			Rectangle rect = prevButton;
+
+			Color btnColor;
+			// 画圆角矩形
+			if (!model.isBackward()) {
+				btnColor = new Color(Config.GRAY);
+			} else {
+				btnColor = new Color(Config.YELLOW);
+			}
+			// 画圆角矩形
+			g2d.setPaint(btnColor);
+			g2d.fillRoundRect(rect.x, rect.y, rect.width, rect.height, 16, 16);
+
+			// 画文字
+			g2d.setPaint(new Color(Config.BLACK));
+			g2d.setFont(new Font("微软雅黑", Font.PLAIN, 14));
+			String text = "<";
+
+			FontMetrics fm = g2d.getFontMetrics(g2d.getFont());
+			int fontSize = fm.getHeight(); // 字高
+			int textWidth = fm.stringWidth(text);
+			int leading = fm.getLeading();
+			int descent = fm.getDescent(); // bottom->baseline 的高度
+
+			int x = 0;
+			int y = 0;
+			x = rect.x + (rect.width - textWidth) / 2; // 水平居中
+			y = rect.y + rect.height / 2 + (fontSize - leading) / 2 - descent; // 竖直居中
+			g2d.drawString(text, x, y);
+		}
+
+		
+		if (nextButton != null) {
+			Rectangle rect = nextButton;
+
+			Color btnColor;
+			// 画圆角矩形
+			if (!model.isForward()) {
+				btnColor = new Color(Config.GRAY);
+			} else {
+				btnColor = new Color(Config.YELLOW);
+			}
+			g2d.setPaint(btnColor);
+			g2d.fillRoundRect(rect.x, rect.y, rect.width, rect.height, 16, 16);
+
+			// 画文字
+			g2d.setPaint(new Color(Config.BLACK));
+			g2d.setFont(new Font("微软雅黑", Font.PLAIN, 14));
+			String text = ">";
 
 			FontMetrics fm = g2d.getFontMetrics(g2d.getFont());
 			int fontSize = fm.getHeight(); // 字高
@@ -300,6 +388,8 @@ public class Board extends JPanel {
 
 		paintButton(g);
 
+		paintPrevNextButton(g);
+
 	}
 
 	// x,y: 棋子的坐标 (px)
@@ -369,25 +459,20 @@ public class Board extends JPanel {
 	@Override
 	protected void processMouseEvent(MouseEvent e) {
 		if (e.getID() == MouseEvent.MOUSE_RELEASED) {
-			// 是否点击了‘重新开始’按钮
-			if (restartButton.contains(e.getPoint())) {
-				clickRestartButton(e);
-			}
+			clickRestartBtn(e);
 
-			if (humandrobotButton.contains(e.getPoint())) {
-				setRule(Position.COMPUTER);
-				model.reset();
-				robotA.start();
-				this.isActive = true;
-				repaint();
-				whoIsNow = Position.HUMAN;
-				return;
-			}
+			clickHumanBtn(e);
+
 
 			// 如果游戏结束了就不需要再画界面了
 			if (!isActive) {
 				return;
 			}
+
+			
+			clickPrevBtn(e);
+
+			clickNextBtn(e);
 
 			// 人下了一子
 			Position p = testPosition(e.getX(), e.getY());
@@ -399,14 +484,72 @@ public class Board extends JPanel {
 				// if human vs computer, notify the competitor
 				if (isActive && rule == Position.COMPUTER) {
 					// 鼠标点击事件
-					disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
-					focus.px = -1;
-					focus.py = -1;
-					notifyRobots();
+					disableHuman();
 				}
 			}
 		}
 		super.processMouseEvent(e);
+	}
+
+	private void disableHuman() {
+		// 鼠标点击事件
+		disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+		focus.px = -1;
+		focus.py = -1;
+		notifyRobots();
+	}
+
+	private void activeHuman() {
+		enableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+
+	}
+
+	private void clickNextBtn(MouseEvent e) {
+		if (nextButton.contains(e.getPoint()) && isActive && model.isForward()) {
+			Position p = model.forward();
+			if (p.role == Position.COMPUTER) {
+				activeHuman();
+			} else if (p.role == Position.HUMAN) {
+				disableHuman();
+			}
+			repaint();
+		}
+	}
+
+	private void clickPrevBtn(MouseEvent e) {
+		if (prevButton.contains(e.getPoint()) && isActive && model.isBackward()) {
+			Position p = model.backward();
+			if (p.role == Position.COMPUTER) {
+				disableHuman();
+			} else if (p.role == Position.HUMAN) {
+				activeHuman();
+			}
+			repaint();
+		}
+	}
+
+	private void clickRestartBtn(MouseEvent e) {
+		// 是否点击了‘重新开始’按钮
+		if (restartButton.contains(e.getPoint())) {
+			model.reset();
+			setRule(Position.COMPUTER);
+			whoIsNow = Position.WHITE;
+			isActive = true;
+			repaint();
+			return;
+		}
+	}
+
+	private void clickHumanBtn(MouseEvent e) {
+		if (humandrobotButton.contains(e.getPoint())) {
+			setRule(Position.COMPUTER);
+			model.reset();
+			robotA.start();
+			this.isActive = true;
+			repaint();
+			whoIsNow = Position.HUMAN;
+			return;
+		}
 	}
 
 	/**
@@ -420,19 +563,6 @@ public class Board extends JPanel {
 		if (rule == Position.COMPUTER) {
 			this.robotA = new Robots(this);
 		}
-	}
-
-	/*
-	 *  点击重启按钮操作
-	 * 
-	 */
-	private void clickRestartButton(MouseEvent e) {
-		model.reset();
-		setRule(Position.COMPUTER);
-		whoIsNow = Position.WHITE;
-		isActive = true;
-		repaint();
-		return;
 	}
 
 	/*

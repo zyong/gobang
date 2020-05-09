@@ -173,9 +173,11 @@ public class CheckMate {
         int m;
         for (int i=0; i<points.size(); i++) {
             Position p = points.get(i);
-            model.matrix[p.px][p.py].role = role;
+            p.role = role;
+            model.verify(p);
             m = min(b, role, deep - 1, result2);
-            model.matrix[p.px][p.py].role = Position.EMPTY;
+            p.role = Position.EMPTY;
+            model.verify(p);
 
             if (m >= 0) {
                 if (!result2.isEmpty()) {

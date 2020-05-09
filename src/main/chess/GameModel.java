@@ -2,7 +2,9 @@ package main.chess;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+
 
 import main.Config;
 
@@ -23,6 +25,10 @@ public class GameModel
 	List<Position[]> lines = new ArrayList<>();
 
 	EvaluatePoint ep = new EvaluatePoint();
+
+	private LinkedList<Position> pre = new LinkedList<>();
+	private LinkedList<Position> next = new LinkedList<>();
+
 
 	// 下棋次数
 	int time = 0;
@@ -185,15 +191,59 @@ public class GameModel
 
 	public void update(int x, int y, int role)
 	{
+		if (Config.DEBUG) {
+			System.out.printf("put point px:%d py:%d role:%d%n", x, y, role);
+		}
 		matrix[x][y].role = role;
 		matrix[x][y].mark = ++time;
+		Position p = matrix[x][y];
+		if (!pre.contains(p) && p.role != Position.EMPTY) {
+			pre.addFirst(matrix[x][y]);
+		}
 	}
 
-	public void remove(Position p) {
-		matrix[p.px][p.py].role = Position.EMPTY;
-		matrix[p.px][p.py].mark = 0;
-
+	public void update(Position p) {
+		matrix[p.px][p.py] = p;
+		if (!pre.contains(p) && p.role != Position.EMPTY) {
+			pre.addFirst(p);
+		}
 	}
+
+	public boolean isBackward() {
+		return !pre.isEmpty();
+	}
+
+	public Position backward() {
+		Position p = pre.removeFirst();
+		next.addFirst(new Position(p));
+		p.role = Position.EMPTY;
+		update(p);
+
+		if (Config.DEBUG) {
+			System.out.printf("backward point px:%d py:%d role:%d%n", p.px, p.py, p.role);
+		}
+		return p;
+	}
+
+	public boolean isForward() {
+		return !next.isEmpty();
+	}
+	
+	public Position forward() {
+		Position p = next.removeFirst();
+		p.mark = time;
+		update(p);
+		if (Config.DEBUG) {
+			System.out.printf("forward point px:%d py:%d role:%d%n", p.px, p.py, p.role);
+		}
+		return p;
+	}
+
+	public void verify(Position p) {
+		matrix[p.px][p.py] = p;
+	}
+
+
 
 	public List<Position> genPosition(int deep) {
 		ArrayList<Position> fives = new ArrayList<>();
@@ -304,4 +354,5 @@ public class GameModel
 		}
 		return false;
 	}
+
 }

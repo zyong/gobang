@@ -99,10 +99,13 @@ public class Robots {
 
         ArrayList<Position> points = (ArrayList<Position>) model.genPosition(deep);
         StringBuilder sb = new StringBuilder();
-        for (int i=0; i<points.size(); i++) {
-            sb.append("point x:" + points.get(i).px + " y:"+ points.get(0).py + SEPARATOR);
+        if (Config.DEBUG) {
+            for (int i=0; i<points.size(); i++) {
+                sb.append("point x:" + points.get(i).px + " y:"+ points.get(0).py + SEPARATOR);
+            }
+            System.out.println("gen Points:" + sb.toString());
         }
-        System.out.println("gen Points:" + sb.toString());
+
 
         count = 0;
         abCut = 0;
