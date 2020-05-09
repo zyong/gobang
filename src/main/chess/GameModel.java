@@ -187,6 +187,8 @@ public class GameModel
 			}
 		}
 		time = 0;
+		pre = new LinkedList<>();
+		next = new LinkedList<>();
 	}
 
 	public void update(int x, int y, int role)
@@ -214,14 +216,25 @@ public class GameModel
 	}
 
 	public Position backward() {
-		Position p = pre.removeFirst();
-		next.addFirst(new Position(p));
-		p.role = Position.EMPTY;
-		update(p);
-
-		if (Config.DEBUG) {
-			System.out.printf("backward point px:%d py:%d role:%d%n", p.px, p.py, p.role);
+		int len;
+		if (pre.size() >= 2) {
+			len = 2;
+		} else {
+			len = 1;
 		}
+
+		Position p = null;
+		for (int i=0; i<len; i++) {
+			p = pre.removeFirst();
+			next.addFirst(new Position(p));
+			p.role = Position.EMPTY;
+			update(p);
+	
+			if (Config.DEBUG) {
+				System.out.printf("backward point px:%d py:%d role:%d%n", p.px, p.py, p.role);
+			}
+		}
+
 		return p;
 	}
 
@@ -230,12 +243,22 @@ public class GameModel
 	}
 	
 	public Position forward() {
-		Position p = next.removeFirst();
-		p.mark = time;
-		update(p);
-		if (Config.DEBUG) {
-			System.out.printf("forward point px:%d py:%d role:%d%n", p.px, p.py, p.role);
+		int len;
+		if (next.size() >= 2) {
+			len = 2;
+		} else {
+			len = 1;
 		}
+		Position p = null;
+		for (int i=0; i<len; i++) {
+			p = next.removeFirst();
+			p.mark = time;
+			update(p);
+			if (Config.DEBUG) {
+				System.out.printf("forward point px:%d py:%d role:%d%n", p.px, p.py, p.role);
+			}
+		}
+
 		return p;
 	}
 

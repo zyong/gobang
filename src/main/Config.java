@@ -15,4 +15,5 @@ public class Config {
     public static final int GRAY = 0xCCCCCC;
     public static final int YELLOW = 0xFFD700;
     public static final int BLACK = 0x303030;
+    public static final int WHITE = 0xFCFCFC;
 }

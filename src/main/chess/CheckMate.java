@@ -259,9 +259,13 @@ public class CheckMate {
         }
 
         if(!result.isEmpty()) {
-            System.out.println("算杀成功(" + time + "毫秒, "+ debugNodeCount + "个节点):" + sb.toString());
+            if (Config.DEBUG) {
+                System.out.println("算杀成功(" + time + "毫秒, "+ debugNodeCount + "个节点):" + sb.toString());
+            }
         } else {
-            System.out.println("算杀失败("+time+"毫秒)" );
+            if (Config.DEBUG) {
+                System.out.println("算杀失败("+time+"毫秒)" );
+            }
         }
         return result;
     }
