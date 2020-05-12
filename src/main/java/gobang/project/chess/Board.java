@@ -440,7 +440,7 @@ public class Board extends JPanel {
 				checkWin();
 
 				// if human vs computer, notify the competitor
-				if (rule == Position.COMPUTER) {
+				if (isActive && rule == Position.COMPUTER) {
 					isCompute = true;
 					// 鼠标点击事件
 					disableEvents(AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);

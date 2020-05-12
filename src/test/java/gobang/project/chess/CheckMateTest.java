@@ -52,11 +52,11 @@ public class CheckMateTest {
         model.update(2, 3, 1);
         model.update(3, 3, 2);
         model.update(3, 4, 2);
-        model.update(4, 3, 1);
+        // model.update(4, 3, 1);
         model.update(4, 4, 1);
         model.update(4, 5, 1);
-        model.update(4, 6, 2);
-        model.update(5, 2, 1);
+        model.update(4, 6, 1);
+
         model.update(5, 3, 2);
         model.update(5, 4, 2);
         cm = new CheckMate(b);
@@ -64,6 +64,7 @@ public class CheckMateTest {
         Assert.assertNotNull(p);
     }
 
+    @Test
     public void check3() throws Exception {
         Config.N = 9;
         b = new Board();
@@ -81,17 +82,21 @@ public class CheckMateTest {
       [ 0, 0, 0, 0, 1, 0, 0, 0, 0],
       [ 0, 0, 0, 0, 0, 0, 0, 0, 0],
          */
+        model.update(2, 0, 2);
+        model.update(3, 0, 2);
+        model.update(4, 0, 1);
+        model.update(1, 1, 2);
         model.update(2, 1, 1);
+        model.update(3, 1, 1);
+        model.update(4, 1, 2);
+        model.update(1, 2, 2);
+        model.update(2, 2, 1);
+        model.update(3, 2, 1);
+        model.update(4, 2, 2);
+        model.update(1, 3, 2);
         model.update(2, 3, 1);
-        model.update(3, 3, 2);
-        model.update(3, 4, 2);
         model.update(4, 3, 1);
-        model.update(4, 4, 1);
-        model.update(4, 5, 1);
-        model.update(4, 6, 2);
-        model.update(5, 2, 1);
-        model.update(5, 3, 2);
-        model.update(5, 4, 2);
+        model.update(1, 4, 1);
         cm = new CheckMate(b);
         Position p = cm.check(b, 1, 6, false);
         Assert.assertNotNull(p);
@@ -116,22 +121,22 @@ public class CheckMateTest {
       [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          */
-        model.update(0, 4, 2);
-        model.update(1, 3, 1);
-        model.update(1, 4, 1);
-        model.update(2, 4, 1);
-        model.update(2, 6, 2);
-        model.update(3, 2, 1);
+        model.update(4, 0, 2);
+        model.update(3, 1, 1);
+        model.update(4, 1, 1);
+        model.update(4, 2, 1);
+        model.update(6, 2, 2);
+        model.update(2, 3, 1);
         model.update(3, 3, 2);
-        model.update(3, 4, 1);
-        model.update(3, 5, 1);
-        model.update(4, 3, 2);
-        model.update(4, 4, 1);
-        model.update(4, 5, 2);
-        model.update(4, 6, 2);
+        model.update(4, 3, 1);
         model.update(5, 3, 1);
         model.update(5, 4, 2);
-        model.update(6, 5, 2);
+        model.update(6, 4, 1);
+        model.update(7, 4, 2);
+        model.update(8, 4, 2);
+        model.update(3, 5, 1);
+        model.update(4, 5, 2);
+        model.update(5, 6, 2);
 
         cm = new CheckMate(b);
         Position p = cm.check(b, 1, 0, false);
@@ -140,7 +145,7 @@ public class CheckMateTest {
 
     @Test
     public void check5() throws Exception {
-        Config.N = 10;
+        Config.N = 6;
         b = new Board();
         b.setRule(Position.COMPUTER);
         GameModel model = b.getModel();
@@ -155,18 +160,18 @@ public class CheckMateTest {
       [ 0, 0, 0, 0, 0, 0, 0],
          */
 
-        model.update(0, 1, 1);
-        model.update(0, 2, 1);
+        model.update(1, 0, 1);
+        model.update(2, 0, 1);
         model.update(1, 1, 2);
-        model.update(1, 2, 2);
-        model.update(1, 3, 2);
-        model.update(2, 4, 1);
-        model.update(3, 4, 1);
-        model.update(4, 4, 1);
+        model.update(2, 1, 2);
+        model.update(3, 1, 2);
+        model.update(4, 2, 1);
+        model.update(4, 3, 1);
+        model.update(5, 3, 1);
         model.update(5, 4, 2);
 
         cm = new CheckMate(b);
         Position p = cm.check(b, 1, 0, false);
-        Assert.assertNotNull(p);
+        Assert.assertNull(p);
     }
 }
