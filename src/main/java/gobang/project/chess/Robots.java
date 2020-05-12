@@ -1,11 +1,9 @@
-package main.chess;
+package gobang.project.chess;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Random;
-
-import main.Config;
 
 
 /**

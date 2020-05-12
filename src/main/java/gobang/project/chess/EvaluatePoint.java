@@ -1,4 +1,4 @@
-package main.chess;
+package gobang.project.chess;
 
 public class EvaluatePoint {
 

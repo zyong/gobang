@@ -1,13 +1,8 @@
-package test.chess;
+package gobang.project.chess;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import main.chess.Board;
-import main.chess.EvaluatePoint;
-import main.chess.GameModel;
-import main.chess.Position;
-import main.Config;
 
 public class EvaluatePointTest {
     Board b;
@@ -78,6 +73,6 @@ public class EvaluatePointTest {
 
 
         int score = ep.scorePoint(model, 6, 10, Position.HUMAN);
-        Assert.assertEquals((long)(Position.THREE + 3*Position.ONE), score);
+        Assert.assertEquals((long)(Position.FIVE + 3*Position.ONE), score);
     }
 }

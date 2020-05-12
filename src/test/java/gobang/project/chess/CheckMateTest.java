@@ -1,13 +1,8 @@
-package test.chess;
+package gobang.project.chess;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import main.chess.Board;
-import main.chess.CheckMate;
-import main.Config;
-import main.chess.GameModel;
-import main.chess.Position;
 
 public class CheckMateTest {
     Board b;

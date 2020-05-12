@@ -1,4 +1,4 @@
-package main;
+package gobang.project;
 
 
 
@@ -24,15 +24,7 @@ public class App
 
 	public static void main(String[] args)
 	{
-		// 设置界面样式 Look And Feel
-//		try {
-//			UIManager.setLookAndFeel(
-//					UIManager.getSystemLookAndFeelClassName());
-//	    } catch(Exception ex)
-//		{
-//	    	ex.printStackTrace();
-//		}
-		
+
 		// 此段代码间接地调用了 createGUI()，具体原理在 Swing高级篇 里讲解
 		// 初学者先照抄此代码框架即可
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {

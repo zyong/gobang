@@ -1,12 +1,9 @@
-package main.chess;
+package gobang.project.chess;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
-
-import main.Config;
 
 /* 游戏数据模型
  * 

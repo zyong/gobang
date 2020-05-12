@@ -1,4 +1,4 @@
-package main;
+package gobang.project.chess;
 
 
 public class Config {

@@ -1,4 +1,4 @@
-package main.chess;
+package gobang.project.chess;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,7 +9,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;

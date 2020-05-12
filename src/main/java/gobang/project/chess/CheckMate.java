@@ -1,11 +1,9 @@
-package main.chess;
+package gobang.project.chess;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-
-import main.Config;
 
 
 public class CheckMate {
@@ -243,11 +241,11 @@ public class CheckMate {
 
     // 迭代加深
     List<Position> deeping(Board b, int role, int deep) throws Exception {
-        var start = new Date().getTime();
+        long start = new Date().getTime();
         debugNodeCount = 0;
         int m;
         ArrayList<Position> result = new ArrayList<>();
-        for(var i=1;i<=deep;i++) {
+        for(int i=1;i<=deep;i++) {
             m = max(b, role, i, result);
             if(m >= 0) break; //找到一个就行
         }

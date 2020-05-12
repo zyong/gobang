@@ -1,5 +1,6 @@
-package main.chess;
+package gobang.project.chess;
 
+import java.awt.AWTEvent;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -10,11 +11,9 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Path2D;
-import java.awt.AWTEvent;
+
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-
-import main.Config;
 
 
 /* 棋盘定义
@@ -122,7 +121,7 @@ public class Board extends JPanel {
 		int size = w < h ? w : h;
 		size -= Config.magin;// padding
 		int x = (w - size) / 2;
-		int y = (h - size) / 2;
+		int y = (w - size) / 2 + 100;
 
 		// 计算经线和纬线的位置
 		cell = size / (N-1);

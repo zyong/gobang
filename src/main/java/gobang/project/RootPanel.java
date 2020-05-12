@@ -1,4 +1,4 @@
-package main;
+package gobang.project;
 
 import java.awt.Color;
 import java.awt.Graphics;

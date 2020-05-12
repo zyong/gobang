@@ -1,10 +1,7 @@
-package test.chess;
+package gobang.project.chess;
 
 import org.junit.Test;
 
-import main.chess.GameModel;
-import main.chess.Position;
-import main.Config;
 
 import static org.junit.Assert.assertEquals;
 

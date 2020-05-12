@@ -1,4 +1,4 @@
-package main;
+package gobang.project;
 
 import java.awt.BorderLayout;
 
@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import main.chess.Board;
+import gobang.project.chess.Board;
 
 
 public class AppFrame extends JFrame
@@ -19,7 +19,7 @@ public class AppFrame extends JFrame
 
 	public AppFrame()
 	{
-		super("Swing实战篇 - 五子棋");
+		super("五子棋人机大战");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setSize(600, 1080);
 		setResizable(false);
