@@ -1,7 +1,11 @@
-package gobang.project.chess;
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import chess.Board;
+import chess.Config;
+import chess.EvaluatePoint;
+import chess.GameModel;
+import chess.Position;
 
 
 public class EvaluatePointTest {

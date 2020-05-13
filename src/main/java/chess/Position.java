@@ -1,4 +1,4 @@
-package gobang.project.chess;
+package chess;
 
 /* 点位
  * 

@@ -1,5 +1,3 @@
-package gobang.project;
-
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -24,7 +22,7 @@ public class RootPanel extends JPanel
 	public RootPanel()
 	{
 		try {
-			URL url = getClass().getResource("res/background.jpg");
+			URL url = getClass().getResource("/res/background.jpg");
 			bgImage = ImageIO.read(url);
 		}catch(Exception e)
 		{

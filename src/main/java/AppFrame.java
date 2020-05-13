@@ -1,14 +1,13 @@
-package gobang.project;
+
 
 import java.awt.BorderLayout;
 import java.io.IOException;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import gobang.project.chess.Board;
+import chess.Board;
 
 public class AppFrame extends JFrame {
 
@@ -22,9 +21,6 @@ public class AppFrame extends JFrame {
 		super("五子棋人机大战");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setSize(600, 1080);
-
-		ImageIcon imageIcon = new ImageIcon("res/gobang.png");
-		setIconImage(imageIcon.getImage());
 
 
 		setResizable(false);

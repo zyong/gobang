@@ -1,12 +1,11 @@
-package gobang.project.chess;
-
 import org.junit.Test;
-
-
 import static org.junit.Assert.assertEquals;
 
-
 import java.util.ArrayList;
+
+import chess.Config;
+import chess.GameModel;
+import chess.Position;
 
 public class GameModelTest {
 

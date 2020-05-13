@@ -32,6 +32,11 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+          <directory>${project.basedir}/src/main/</directory>
+      </resource>
+  </resources>
     <plugins>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
@@ -104,7 +109,7 @@
     <configuration>
       <archive>
         <manifest>
-            <mainClass>gobang.project.App</mainClass>
+            <mainClass>App</mainClass>
         </manifest>
     </archive>
       <descriptorRefs>

@@ -1,4 +1,4 @@
-package gobang.project.chess;
+package chess;
 
 import java.awt.AWTEvent;
 import java.awt.BasicStroke;

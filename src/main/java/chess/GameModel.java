@@ -1,4 +1,4 @@
-package gobang.project.chess;
+package chess;
 
 import java.util.ArrayList;
 import java.util.Arrays;
